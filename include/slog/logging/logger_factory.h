@@ -9,12 +9,20 @@
 #include <memory>
 #include <string>
 #include <mutex>
+#include <atomic>
+
+#include "slog/utils/no_copyable.h"
 
 namespace slog {
 
 class Logger;
+
 class LogScheduler;
+
+class Appender;
+
 class Configuration;
+
 
 /**
  * LoggerFactory会在系统启动前从配置文件实例化RootLogger和一些特殊配置的logger
@@ -24,26 +32,59 @@ class Configuration;
  */
 class LoggerFactory {
 public:
-  static LoggerFactory& Instance();
-  static std::shared_ptr<Logger> GetLogger(const std::string& name = "");
-  static std::shared_ptr<LogScheduler> Scheduler();
-  static std::shared_ptr<Logger> Root();
+  static void Init(const Configuration &cfg);
+
+  static std::shared_ptr<Logger> GetLogger(const std::string &name = "");
+
 private:
-  LoggerFactory();
-  LoggerFactory(const Configuration& cfg);
 
   /**
-   * 使用Double-Check，在指名logger未实例化时构造插入新的Logger，保证线程安全
-   * @param name
-   * @return
+   * IOC容器类
    */
-  std::shared_ptr<Logger> SafeGetLogger(const std::string& name);
+  class Coordinator : public NoCopyable {
+  public:
 
-  static LoggerFactory factory_;
-  std::unordered_map<std::string,std::shared_ptr<Logger>> loggers_;
-  std::shared_ptr<Logger> root_logger_;
-  std::shared_ptr<LogScheduler> scheduler_;
-  std::mutex mutex_;
+    Coordinator();
+
+    ~Coordinator();
+
+    /**
+     * 使用Double-Check，在指名logger未实例化时构造插入新的Logger，保证线程安全
+     * @param name
+     * @return
+     */
+    std::shared_ptr<Logger> SafeGetLogger(const std::string &name);
+
+    std::shared_ptr<LogScheduler> SafeGetScheduler();
+
+    std::shared_ptr<Logger> SafeGetRootLogger();
+
+    std::shared_ptr<Appender> SafeGetAppender(const std::string &name);
+
+    void Reset();
+
+    bool ready() const;
+
+  private:
+
+    void Initialize(const Configuration &cfg);
+
+    std::unique_ptr<Configuration> configuration_;
+
+    std::unordered_map<std::string, std::shared_ptr<Logger>> loggers_;
+    std::unordered_map<std::string, std::shared_ptr<Appender>> appenders_;
+    std::shared_ptr<Logger> root_logger_;
+    std::shared_ptr<LogScheduler> scheduler_;
+    std::mutex mutex_;
+
+    std::atomic_bool is_ready_;
+
+    friend class LoggerFactory;
+  };
+
+  LoggerFactory() = delete;
+
+  static Coordinator coordinator;
 };
 
 }

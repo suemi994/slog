@@ -18,6 +18,10 @@ class LogScheduler;
 class Layout;
 class Filter;
 
+/**
+ * 负责过滤筛选日志事件并格式化日志
+ * @author suemi
+ */
 class Logger : public NoCopyable {
 public:
   Logger(const std::string& name, std::shared_ptr<LogScheduler> scheduler);
