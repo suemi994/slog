@@ -26,24 +26,39 @@ public:
     ACCEPT
   };
 
-  Filter();
+  Filter() = default;
 
   virtual ~Filter();
-
-  void Append(FilterPtr filter);
-
-  FilterPtr get_next() const;
-
-  bool has_next() const;
 
   virtual Result Decide(LogEvent &log_event) const = 0;
 
   virtual bool Equals(const Filter &filter) const;
 
-private:
-  FilterPtr next_;
 };
 
+class CompositeFilter : public Filter {
+
+};
+
+class AndFilter : public CompositeFilter {
+
+};
+
+class OrFilter : public CompositeFilter {
+
+};
+
+class BinaryFilter : public Filter {
+
+};
+
+class BinaryAndFilter : public BinaryFilter {
+
+};
+
+class BinaryOrFilter : public BinaryFilter {
+
+};
 
 class DenyAllFilter : public Filter {
 public:

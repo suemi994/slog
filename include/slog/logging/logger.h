@@ -9,13 +9,16 @@
 #include <memory>
 
 #include "slog/logging/log_level.h"
+#include "slog/utils/no_copyable.h"
 
 namespace slog {
 
-class LogStream;
+class LogEvent;
 class LogScheduler;
+class Layout;
+class Filter;
 
-class Logger {
+class Logger : public NoCopyable {
 public:
 
 
@@ -25,12 +28,14 @@ public:
   const std::string& get_name() const;
   bool IsEnableFor(LogLevel level) const ;
 
-  void Submit(LogStream& log);
+  void Submit(LogEvent& log);
 
 private:
   std::shared_ptr<LogScheduler> scheduler_;
   std::string name_;
   volatile LogLevel level_;
+  std::shared_ptr<Layout> layout_;
+  std::shared_ptr<Filter> filter_;
 };
 
 }
