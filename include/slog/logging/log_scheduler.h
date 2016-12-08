@@ -5,4 +5,15 @@
 #ifndef SLOG_LOG_SCHEDULER_H
 #define SLOG_LOG_SCHEDULER_H
 
+#include "slog/utils/no_copyable.h"
+
+namespace slog {
+
+class LogScheduler : public NoCopyable {
+public:
+  LogScheduler(int fulsh_interval);
+};
+
+}
+
 #endif 

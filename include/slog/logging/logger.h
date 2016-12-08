@@ -20,15 +20,20 @@ class Filter;
 
 class Logger : public NoCopyable {
 public:
+  Logger(const std::string& name, std::shared_ptr<LogScheduler> scheduler);
 
+  Logger(const std::string& name);
+
+  const std::string& name() const;
+  bool IsEnableFor(LogLevel level) const ;
+
+  void Submit(LogEvent& log);
 
   LogLevel log_level() const ;
   void set_log_level(LogLevel level);
 
-  const std::string& get_name() const;
-  bool IsEnableFor(LogLevel level) const ;
-
-  void Submit(LogEvent& log);
+  std::shared_ptr<Layout> layout() const;
+  std::shared_ptr<Filter> filter() const;
 
 private:
   std::shared_ptr<LogScheduler> scheduler_;
