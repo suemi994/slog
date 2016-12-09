@@ -17,6 +17,8 @@ public:
 
   FixedBuffer();
 
+  ~FixedBuffer();
+
   void Append(const char *buffer, size_t len);
 
   void Reset();

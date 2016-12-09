@@ -8,12 +8,19 @@ namespace slog {
 
 template<int SIZE>
 FixedBuffer<SIZE>::FixedBuffer() : pos_(0) {
+  set_cookie(&FixedBuffer<SIZE>::CookieStart);
+}
 
+template<int SIZE>
+FixedBuffer::~FixedBuffer() {
+  set_cookie(&FixedBuffer<SIZE>::CookieEnd);
 }
 
 template<int SIZE>
 void FixedBuffer<SIZE>::Append(const char *buffer, size_t len) {
-
+  auto to_write_len = avail()<len?avail():len;
+  memcpy(current(),buffer,to_write_len);
+  pos_+=to_write_len;
 }
 
 template<int SIZE>
@@ -71,4 +78,6 @@ void FixedBuffer<SIZE>::CookieEnd() {
   // Do Nothing
 }
 
+template class FixedBuffer<detail::SMALL_BUFFER_SIZE>;
+template class FixedBuffer<detail::LARGE_BUFFER_SIZE>;
 }
