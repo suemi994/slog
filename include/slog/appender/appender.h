@@ -15,12 +15,13 @@ namespace slog {
 class ErrorHandler;
 
 class Appender : public NoCopyable {
-  using Buffer = FixedBuffer<detail::LARGE_BUFFER_SIZE>;
 public:
 
   struct Result {
     bool is_success;
     std::string message;
+    char* data;
+    int written;
   };
 
   Appender();
@@ -30,17 +31,23 @@ public:
 
   bool IsClosed() const ;
 
-  virtual Result Append(const Buffer& buffer) = 0;
+  template<int SIZE>
+  virtual void Append(const FixedBuffer<SIZE>& buffer) = 0;
+
+  virtual void Append(const char* data, int len) = 0;
 
   const std::string& name() const;
 
-  std::shared_ptr<ErrorHandler> error_handler() const ;
+  std::unique_ptr<ErrorHandler> error_handler() const ;
 
-  void set_error_handler(std::shared_ptr<ErrorHandler> handler);
+  void set_error_handler(std::unique_ptr<ErrorHandler> handler);
 
 protected:
+
+  virtual Result DoAppend(const char* data, int len);
+
   std::string name_;
-  std::shared_ptr<ErrorHandler> error_handler_;
+  std::unique_ptr<ErrorHandler> error_handler_;
 };
 
 }
