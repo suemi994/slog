@@ -6,6 +6,7 @@
 #define SLOG_FIXED_BUFFER_H
 
 #include <string>
+#include <functional>
 #include "slog/utils/no_copyable.h"
 
 namespace slog {
@@ -32,7 +33,15 @@ public:
 
   int avail() const;
 
+  void set_cookie(std::function<void()> cookie);
+
 private:
+  const char* end() const ;
+  std::function<void()> cookie_;
+
+  static void CookieStart();
+  static void CookieEnd();
+
   int pos_;
   char data_[SIZE];
 };
