@@ -5,4 +5,18 @@
 #ifndef SLOG_NULL_APPENDER_H
 #define SLOG_NULL_APPENDER_H
 
+#include "slog/appender/appender.h"
+
+namespace slog {
+
+/**
+ * 输出到/dev/null，什么也不做的Appender
+ * @author suemi
+ */
+class NullAppender : public Appender {
+
+};
+
+}
+
 #endif 

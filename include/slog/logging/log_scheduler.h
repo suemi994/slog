@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <thread>
+#include <mutex>
 #include <condition_variable>
 #include "slog/utils/no_copyable.h"
 #include "slog/base/fixed_buffer.h"
@@ -56,7 +57,9 @@ private:
   bool is_running_;
   const int flush_interval_;
   std::thread thread_;
+
   std::condition_variable cond_;
+  std::mutex mutex_;
 
   BufferPtr current_buffer_;
   BufferPtr next_buffer_;

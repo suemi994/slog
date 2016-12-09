@@ -17,8 +17,9 @@ namespace slog {
  * @author suemi
  */
 class Properties {
-  using StringMap = std::unordered_map<std::string,std::string>;
+  using StringMap = std::unordered_map<std::string, std::string>;
 public:
+
   Properties();
 
   explicit Properties(std::istream &in);
@@ -51,14 +52,16 @@ public:
 
   bool GetLong(long &val, const std::string &key) const;
 
-  bool GetFloat(float& val, const std::string& key) const ;
+  bool GetFloat(float &val, const std::string &key) const;
+
+  static const char PROPERTIES_COMMENT_CHAR;
 
 private:
 
-  void Initialize(std::istream& in);
+  void Initialize(std::istream &in);
 
   template<typename T>
-  bool GetValue(T& val, const std::string& key) const;
+  bool GetValue(T &val, const std::string &key) const;
 
   StringMap values_;
 

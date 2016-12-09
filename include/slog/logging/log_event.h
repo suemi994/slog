@@ -16,6 +16,8 @@ namespace slog {
 
 class Logger;
 
+class Formatter;
+
 /**
  * 包含日志内容以及携带每条日志相关信息
  * @author suemi
@@ -29,13 +31,59 @@ public:
 
   ~LogEvent();
 
-  self& operator<<(char val);
+  self &operator<<(bool val);
+
+  self &operator<<(short val);
+
+  self &operator<<(unsigned short val);
+
+  self &operator<<(int val);
+
+  self &operator<<(unsigned int val);
+
+  self &operator<<(long val);
+
+  self &operator<<(unsigned long val);
+
+  self &operator<<(long long val);
+
+  self &operator<<(unsigned long long val);
+
+  self &operator<<(char val);
+
+  self &operator<<(const void *);
+
+  self &operator<<(float v);
+
+  self &operator<<(double);
+
+  self &operator<<(const char *val);
+
+  self &operator<<(const unsigned char *str);
+
+  self &operator<<(const std::string &v);
+
+  self &operator<<(const Buffer &v);
+
+  void Append(const char *data, int len);
+
+  const Buffer &get_buffer() const;
+
+  void Reset();
 
 private:
+
+  void StaticCheck();
+
+  template<typename T>
+  void Format(T t);
+
   Buffer buffer_;
   LogLevel level_;
   std::weak_ptr<Logger> logger_;
 };
+
+LogEvent &operator<<(LogEvent &log_event, const Formatter &formatter);
 
 }
 
