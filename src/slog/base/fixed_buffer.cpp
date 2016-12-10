@@ -12,7 +12,7 @@ FixedBuffer<SIZE>::FixedBuffer() : pos_(0) {
 }
 
 template<int SIZE>
-FixedBuffer::~FixedBuffer() {
+FixedBuffer<SIZE>::~FixedBuffer() {
   set_cookie(&FixedBuffer<SIZE>::CookieEnd);
 }
 
@@ -24,7 +24,7 @@ void FixedBuffer<SIZE>::Append(const char *buffer, size_t len) {
 }
 
 template<int SIZE>
-void FixedBuffer::Reset() {
+void FixedBuffer<SIZE>::Reset() {
   pos_ = 0;
 }
 
