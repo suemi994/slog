@@ -60,6 +60,8 @@ private:
 
   void Initialize(std::istream &in);
 
+  const std::string &DoGetProperty(const std::string &key) const;
+
   template<typename T>
   bool GetValue(T &val, const std::string &key) const;
 

@@ -66,7 +66,7 @@ TEST(FORMATTER_TEST, FLOAT_INPUT) {
   float tmp = 1.123;
   Formatter fmt("%1.2lf", tmp);
   EXPECT_EQ("1.12", std::string(fmt.data(), fmt.length()));
-  fmt = Formatter("%e",tmp);
+  fmt = Formatter("%e", tmp);
   EXPECT_EQ("1.123000e+00", std::string(fmt.data(), fmt.length()));
 }
 
@@ -74,7 +74,7 @@ TEST(FORMATTER_TEST, DOUBLE_INPUT) {
   double tmp = 1.123456789;
   Formatter fmt("%1.2lf", tmp);
   EXPECT_EQ("1.12", std::string(fmt.data(), fmt.length()));
-  fmt = Formatter("%e",tmp);
+  fmt = Formatter("%e", tmp);
   EXPECT_EQ("1.1234567e+00", std::string(fmt.data(), fmt.length()));
 }
 
