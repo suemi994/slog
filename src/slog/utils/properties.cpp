@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <sstream>
 #include <fstream>
+#include <assert.h>
 #include "slog/utils/properties.h"
 
 namespace slog {
@@ -43,7 +44,61 @@ void trimBorderSpace(std::string &line) {
   trimTailSpace(line);
 }
 
+bool parseAsBool(bool &val, const std::string &str) {
+  std::istringstream iss(str);
+  std::string word;
+
+  // Read a single "word".
+  iss>>word;
+  if (!iss)
+    return false;
+
+  // Following extraction of a character should fail
+  // because there should only be a single "word".
+
+  char ch;
+  if (iss >> ch)
+    return false;
+
+  // Compare with "true" and "false".
+
+  std::transform(word.begin(), word.end(), word.begin(), ::tolower);
+  bool result = true;
+  if (word == "true")
+    val = true;
+  else if (word == "false")
+    val = false;
+
+    // Try to interpret the "word" as a number.
+
+  else {
+    // Seek back to the start of stream.
+
+    iss.clear();
+    iss.seekg(0);
+    assert(iss);
+
+    // Extract value.
+
+    long lval;
+    iss >> lval;
+
+    // The extraction should be successful and
+    // following extraction of a characters should fail.
+
+    result = !!iss && !(iss >> ch);
+    if (result)
+      val = !!lval;
+  }
+
+  return result;
 }
+
+}
+
+const char Properties::PROPERTIES_COMMENT_CHAR = '#';
+
+const std::string empty_string = std::string();
 
 Properties::Properties() {
 
@@ -58,7 +113,7 @@ Properties::Properties(const std::string &input_file) {
   std::ifstream in;
   in.open(input_file.c_str(), std::ios::binary);
   if (!in.good()) {
-    std::cerr << "slog property file" << input_file << " can't get!" << std::endl;
+    std::cerr << "slog property file " << input_file << " can't get!" << std::endl;
     //TODO 使用log_macro记录文件读取失败日志
   }
   Initialize(in);
@@ -85,14 +140,14 @@ const std::string &Properties::GetProperty(const char *key) const {
 }
 
 const std::string &Properties::GetProperty(const std::string &key, const std::string &default_value) const {
-  auto val = DoGetProperty(key);
+  const std::string &val = DoGetProperty(key);
   return val.empty() ? default_value : val;
 }
 
 std::vector<std::string> Properties::PropertyNames() const {
   std::vector<std::string> keys;
-  std::for_each(values_.cbegin(), values_.cend(), [&keys](StringMap::iterator item) {
-    keys.push_back(item->first);
+  std::for_each(values_.cbegin(), values_.cend(), [&keys](auto &pair) {
+    keys.push_back(pair.first);
   });
   return keys;
 }
@@ -108,9 +163,9 @@ void Properties::RemoveProperty(const std::string &key) {
 Properties Properties::GetPropertySubset(const std::string &prefix) const {
   Properties res;
   const auto prefix_len = prefix.size();
-  std::for_each(values_.cbegin(), values_.cend(), [&](StringMap::iterator it) {
-    if (it->first.compare(0, prefix_len, prefix)) {
-      res.SetProperty(it->first, it->second);
+  std::for_each(values_.cbegin(), values_.cend(), [&](auto &pair) {
+    if (!pair.first.compare(0, prefix_len, prefix)) {
+      res.SetProperty(pair.first, pair.second);
     }
   });
   return res;
@@ -121,7 +176,10 @@ bool Properties::GetInt(int &val, const std::string &key) const {
 }
 
 bool Properties::GetBool(bool &val, const std::string &key) const {
-  return GetValue<bool>(val, key);
+  if (!Exists(key))
+    return false;
+  const std::string &str_val = GetProperty(key);
+  return detail::parseAsBool(val, str_val);
 }
 
 bool Properties::GetLong(long &val, const std::string &key) const {
@@ -172,7 +230,7 @@ void Properties::Initialize(std::istream &in) {
 
 const std::string &Properties::DoGetProperty(const std::string &key) const {
   auto it = values_.find(key);
-  return it == values_.end() ? std::string() : it->second;
+  return it == values_.end() ? empty_string : it->second;
 }
 
 template<typename T>

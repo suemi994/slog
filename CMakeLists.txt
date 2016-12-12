@@ -32,11 +32,15 @@ set(SOURCE_FILES
         src/slog/base/fixed_buffer.cpp
         src/slog/utils/formatter.cpp
         test/slog/utils/test_formatter.cpp
-        src/slog/utils/properties.cpp)
+        src/slog/utils/properties.cpp
+        test/slog/utils/test_properties.cpp)
 
 set(TEST_FILES
         src/slog/utils/formatter.cpp
         test/slog/utils/test_formatter.cpp
+
+        src/slog/utils/properties.cpp
+        test/slog/utils/test_properties.cpp
         )
 
 find_package(GTest 1.80 REQUIRED)
