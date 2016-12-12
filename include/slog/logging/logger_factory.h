@@ -34,7 +34,7 @@ class LoggerFactory {
 public:
   static void Init(const Configuration &cfg);
 
-  static std::shared_ptr<Logger> GetLogger(const std::string &name = "");
+  static Logger& GetLogger(const std::string &name = "");
 
 private:
 

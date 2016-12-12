@@ -67,9 +67,11 @@ public:
 
   void Append(const char *data, int len);
 
-  const Buffer &get_buffer() const;
+  const Buffer &buffer() const;
 
   void Reset();
+
+  LogLevel log_level() const;
 
 private:
 

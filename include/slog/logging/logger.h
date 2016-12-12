@@ -37,12 +37,14 @@ public:
   void set_log_level(LogLevel level);
 
   std::shared_ptr<Layout> layout() const;
+  void set_layout(const std::shared_ptr<Layout> layout);
   std::shared_ptr<Filter> filter() const;
+  void set_filter(const std::shared_ptr<Filter> filter);
 
 private:
   std::shared_ptr<LogScheduler> scheduler_;
   std::string name_;
-  volatile LogLevel level_;
+  LogLevel level_;
   std::shared_ptr<Layout> layout_;
   std::shared_ptr<Filter> filter_;
 };
