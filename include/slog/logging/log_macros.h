@@ -5,4 +5,9 @@
 #ifndef SLOG_LOG_MACROS_H
 #define SLOG_LOG_MACROS_H
 
+#include "slog/logging/log_event.h"
+#include "slog/logging/logger.h"
+
+
+
 #endif 

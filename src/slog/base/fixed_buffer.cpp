@@ -18,9 +18,15 @@ FixedBuffer<SIZE>::~FixedBuffer() {
 
 template<int SIZE>
 void FixedBuffer<SIZE>::Append(const char *buffer, size_t len) {
-  auto to_write_len = avail()<len?avail():len;
-  memcpy(current(),buffer,to_write_len);
-  pos_+=to_write_len;
+  auto to_write_len = avail() < len ? avail() : len;
+  memcpy(current(), buffer, to_write_len);
+  pos_ += to_write_len;
+}
+
+template<int SIZE>
+void FixedBuffer::Forward(size_t len) {
+  pos_ += len;
+  if (pos_ > SIZE) pos_ = SIZE;
 }
 
 template<int SIZE>
@@ -30,7 +36,7 @@ void FixedBuffer<SIZE>::Reset() {
 
 template<int SIZE>
 std::string FixedBuffer<SIZE>::ToString() const {
-  return std::string(data_,length());
+  return std::string(data_, length());
 }
 
 template<int SIZE>
@@ -45,7 +51,7 @@ const char *FixedBuffer<SIZE>::data() const {
 
 template<int SIZE>
 char *FixedBuffer<SIZE>::current() const {
-  return data_+pos_;
+  return data_ + pos_;
 }
 
 template<int SIZE>
@@ -55,7 +61,7 @@ int FixedBuffer<SIZE>::length() const {
 
 template<int SIZE>
 int FixedBuffer<SIZE>::avail() const {
-  return sizeof(data_)-pos_;
+  return sizeof(data_) - pos_;
 }
 
 template<int SIZE>
@@ -65,7 +71,7 @@ void FixedBuffer<SIZE>::set_cookie(std::function<void()> cookie) {
 
 template<int SIZE>
 const char *FixedBuffer<SIZE>::end() const {
-  return data_+ sizeof(data_);
+  return data_ + sizeof(data_);
 }
 
 template<int SIZE>
@@ -78,6 +84,9 @@ void FixedBuffer<SIZE>::CookieEnd() {
   // Do Nothing
 }
 
-template class FixedBuffer<detail::SMALL_BUFFER_SIZE>;
-template class FixedBuffer<detail::LARGE_BUFFER_SIZE>;
+template
+class FixedBuffer<detail::SMALL_BUFFER_SIZE>;
+
+template
+class FixedBuffer<detail::LARGE_BUFFER_SIZE>;
 }

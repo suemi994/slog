@@ -33,7 +33,10 @@ set(SOURCE_FILES
         src/slog/utils/formatter.cpp
         test/slog/utils/test_formatter.cpp
         src/slog/utils/properties.cpp
-        test/slog/utils/test_properties.cpp src/slog/logging/logger.cpp)
+        test/slog/utils/test_properties.cpp
+        src/slog/logging/logger.cpp
+        src/slog/logging/log_event.cpp
+        include/slog/utils/time_helper.h)
 
 set(TEST_FILES
         src/slog/utils/formatter.cpp

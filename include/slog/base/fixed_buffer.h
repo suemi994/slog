@@ -21,6 +21,8 @@ public:
 
   void Append(const char *buffer, size_t len);
 
+  void Forward(size_t len);
+
   void Reset();
 
   std::string ToString() const;

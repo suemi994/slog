@@ -24,10 +24,15 @@ class Formatter;
  */
 class LogEvent : public NoCopyable {
   using self = LogEvent;
+  using Time = std::chrono::system_clock::time_point;
 public:
   using Buffer = FixedBuffer<detail::SMALL_BUFFER_SIZE>;
 
-  LogEvent(LogLevel level_, std::shared_ptr<Logger> logger);
+  LogEvent(LogLevel level, std::shared_ptr<Logger> logger,Time time);
+
+  LogEvent(LogLevel level,std::shared_ptr<Logger> logger);
+
+  LogEvent(LogLevel level);
 
   ~LogEvent();
 
@@ -51,11 +56,11 @@ public:
 
   self &operator<<(char val);
 
-  self &operator<<(const void *);
+  self &operator<<(const void * val);
 
-  self &operator<<(float v);
+  self &operator<<(float val);
 
-  self &operator<<(double);
+  self &operator<<(double val);
 
   self &operator<<(const char *val);
 
@@ -73,19 +78,30 @@ public:
 
   LogLevel log_level() const;
 
-private:
+  const Time& time() const;
 
+  LogEvent &operator<<(const LogEvent &log);
+
+private:
   void StaticCheck();
 
+  /**
+   * 将基本数值类型转换为char添加到buffer中
+   * @tparam T
+   * @param t
+   */
   template<typename T>
-  void Format(T t);
+  void NumberAsString(T t);
+
+  static const int max_numeric_size = 32;
 
   Buffer buffer_;
   LogLevel level_;
+  Time time_;
   std::weak_ptr<Logger> logger_;
 };
 
-LogEvent &operator<<(LogEvent &log_event, const Formatter &formatter);
+LogEvent &operator<<(LogEvent &log, const Formatter &formatter);
 
 }
 
