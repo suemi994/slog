@@ -27,6 +27,8 @@ public:
   Appender();
   virtual ~Appender();
 
+  static std::shared_ptr<Appender> DefaultInstance();
+
   virtual void Close() = 0;
 
   bool IsClosed() const ;

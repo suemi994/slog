@@ -8,7 +8,7 @@
 #include <unordered_map>
 #include <memory>
 #include <string>
-#include <mutex>
+#include <boost/thread/shared_mutex.hpp>
 #include <atomic>
 
 #include "slog/utils/no_copyable.h"
@@ -34,7 +34,7 @@ class LoggerFactory {
 public:
   static void Init(const Configuration &cfg);
 
-  static Logger& GetLogger(const std::string &name = "");
+  static std::shared_ptr<Logger> GetLogger(const std::string &name = "");
 
 private:
 
@@ -69,15 +69,24 @@ private:
 
     void Initialize(const Configuration &cfg);
 
+    bool SafeSetScheduler(std::shared_ptr<LogScheduler> scheduler);
+
+    bool SafeSetRootLogger(std::shared_ptr<Logger> logger);
+
+    bool SafeSetLogger(const std::string &name, const std::shared_ptr<Logger> logger);
+
+    bool SafeSetAppender(const std::string &name, const std::shared_ptr<Appender> appender);
+
     std::unique_ptr<Configuration> configuration_;
 
     std::unordered_map<std::string, std::shared_ptr<Logger>> loggers_;
     std::unordered_map<std::string, std::shared_ptr<Appender>> appenders_;
-    std::shared_ptr<Logger> root_logger_;
-    std::shared_ptr<LogScheduler> scheduler_;
-    std::mutex mutex_;
+    std::atomic<std::shared_ptr<Logger>> root_logger_;
+    std::atomic<std::shared_ptr<LogScheduler>> scheduler_;
 
     std::atomic_bool is_ready_;
+    boost::shared_mutex loggers_mutex_;
+    boost::shared_mutex appenders_mutex_;
 
     friend class LoggerFactory;
   };

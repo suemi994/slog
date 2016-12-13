@@ -36,7 +36,7 @@ set(SOURCE_FILES
         test/slog/utils/test_properties.cpp
         src/slog/logging/logger.cpp
         src/slog/logging/log_event.cpp
-        include/slog/utils/time_helper.h)
+        include/slog/utils/time_helper.h test/slog/logging/test_log_event.cpp src/slog/logging/logger_factory.cpp)
 
 set(TEST_FILES
         src/slog/utils/formatter.cpp
@@ -46,6 +46,8 @@ set(TEST_FILES
         test/slog/utils/test_properties.cpp
         )
 
+add_executable(slog ${SOURCE_FILES})
+
 find_package(GTest 1.80 REQUIRED)
 if (GTEST_FOUND)
     include_directories(${GTEST_INCLUDE_DIRS})
@@ -53,4 +55,9 @@ if (GTEST_FOUND)
     target_link_libraries(slog_test ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} pthread)
 endif (GTEST_FOUND)
 
-add_executable(slog ${SOURCE_FILES})
+find_package(Boost 1.62 REQUIRED)
+if (Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+    target_link_libraries(slog ${Boost_LIBRARIES})
+endif (Boost_FOUND)
+

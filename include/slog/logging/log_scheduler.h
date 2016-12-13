@@ -29,6 +29,8 @@ public:
   LogScheduler(int flush_interval);
   ~LogScheduler();
 
+  static std::shared_ptr<LogScheduler> DefaultInstance();
+
   void Append(const char* buf, int len);
 
   void Flush();
