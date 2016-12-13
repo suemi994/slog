@@ -93,6 +93,7 @@ void LoggerFactory::Coordinator::Reset() {
     boost::unique_lock<boost::shared_mutex> loggers_lock(loggers_mutex_);
     appenders_.clear();
     loggers_.clear();
+    scheduler_.load()->Stop();
     scheduler_.store(nullptr);
     root_logger_.store(nullptr);
   }
@@ -108,7 +109,10 @@ void LoggerFactory::Coordinator::Initialize(const Configuration &cfg) {
 
 bool LoggerFactory::Coordinator::SafeSetScheduler(std::shared_ptr<LogScheduler> scheduler) {
   std::shared_ptr<LogScheduler> ptr = nullptr;
-  return std::atomic_compare_exchange_strong(&scheduler_,&ptr,scheduler);
+  bool res = std::atomic_compare_exchange_strong(&scheduler_,&ptr,scheduler);
+  if(res)
+    scheduler_.load()->Start();
+  return res;
 }
 
 bool LoggerFactory::Coordinator::SafeSetRootLogger(std::shared_ptr<Logger> logger) {
