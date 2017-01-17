@@ -11,7 +11,7 @@ class NoCopyable {
 protected:
   NoCopyable() = default;
 
-  ~NoCopyable() = default;
+  virtual ~NoCopyable() = default;
 
   NoCopyable(const NoCopyable &) = delete;
 

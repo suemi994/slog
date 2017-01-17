@@ -22,6 +22,7 @@ public:
     std::string message;
     char* data;
     int written;
+    int len;
   };
 
   Appender();
@@ -29,6 +30,9 @@ public:
 
   static std::shared_ptr<Appender> DefaultInstance();
 
+  /**
+   * 关闭所持有的资源比如文件句柄、网络socket
+   */
   virtual void Close() = 0;
 
   bool IsClosed() const ;
@@ -40,9 +44,9 @@ public:
 
   const std::string& name() const;
 
-  std::unique_ptr<ErrorHandler> error_handler() const ;
+  std::unique_ptr<ErrorHandler>& error_handler() const ;
 
-  void set_error_handler(std::unique_ptr<ErrorHandler> handler);
+  void set_error_handler(std::unique_ptr<ErrorHandler>&& handler);
 
 protected:
 
@@ -50,6 +54,8 @@ protected:
 
   std::string name_;
   std::unique_ptr<ErrorHandler> error_handler_;
+
+  friend class ErrorHandler;
 };
 
 }

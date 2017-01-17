@@ -38,6 +38,8 @@ std::shared_ptr<Logger> LoggerFactory::Coordinator::SafeGetLogger(const std::str
   if(ptr!= nullptr) return ptr;
 
   std::shared_ptr<Logger> root = SafeGetRootLogger();
+  if(root== nullptr)
+    return nullptr;
   ptr = std::make_shared<Logger>(name);
   ptr->set_log_level(root->log_level());
   ptr->set_layout(root->layout());
