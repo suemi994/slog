@@ -23,6 +23,9 @@ public:
     char* data;
     int written;
     int len;
+
+    Result();
+    Result(bool success, char* start, int length, int write_size = 0, const std::string& msg=std::string());
   };
 
   Appender();
@@ -46,7 +49,7 @@ public:
 
   std::unique_ptr<ErrorHandler>& error_handler() const ;
 
-  void set_error_handler(std::unique_ptr<ErrorHandler>&& handler);
+  void set_error_handler(const std::unique_ptr<ErrorHandler>& handler);
 
 protected:
 

@@ -23,15 +23,18 @@ public:
 
   FilterBuilder &LevelRange(LogLevel min, LogLevel max);
 
-  FilterBuilder &Connect(const FilterPtr filter);
+  FilterBuilder &And(const FilterPtr filter);
+
+  FilterBuilder &And(const FilterList& filters);
+
+  FilterBuilder &Or(const FilterPtr filter);
+  FilterBuilder &Or(const FilterList& filters);
+
+  FilterBuilder &Not(const FilterPtr filter);
 
   FilterPtr Build() const;
 
   FilterBuilder &Reset();
-
-  FilterBuilder &Pop();
-
-  FilterBuilder &Remove(const FilterPtr filter);
 
 private:
   FilterPtr filter_;

@@ -39,7 +39,8 @@ set(SOURCE_FILES
         include/slog/utils/time_helper.h
         test/slog/logging/test_log_event.cpp
         src/slog/logging/logger_factory.cpp
-        src/slog/logging/log_scheduler.cpp src/slog/appender/error_handler.cpp)
+        src/slog/logging/log_scheduler.cpp
+        src/slog/appender/error_handler.cpp src/slog/filter/filter.cpp src/slog/filter/filter_builder.cpp)
 
 set(TEST_FILES
         src/slog/utils/formatter.cpp
