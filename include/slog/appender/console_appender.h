@@ -9,17 +9,6 @@
 
 namespace slog {
 
-class Appender;
-class Appender::Result;
-
-class ErrorHandler {
-public:
-  ErrorHandler();
-  virtual ~ErrorHandler();
-
-  virtual void Handle(const Appender::Result& err) = 0;
-  virtual void Reset();
-};
 
 }
 

@@ -40,11 +40,9 @@ public:
 
 class CompositeFilter : public Filter {
 public:
-  CompositeFilter();
+  CompositeFilter() = default;
 
   CompositeFilter(const FilterList &filters);
-
-  virtual bool Equals(const Filter &filter) const override;
 
   void Append(FilterPtr filter);
 
@@ -72,7 +70,7 @@ inline bool operator!=(const FilterList &lhs, const FilterList &rhs) {
 
 class AndFilter : public CompositeFilter {
 public:
-  AndFilter();
+  AndFilter() = default;
 
   AndFilter(const FilterList &filters);
 
@@ -96,7 +94,7 @@ inline bool operator!=(const AndFilter &lhs, const AndFilter &rhs) {
 
 class OrFilter : public CompositeFilter {
 public:
-  OrFilter();
+  OrFilter() = default;
 
   OrFilter(const FilterList &filters);
 
@@ -121,9 +119,7 @@ inline bool operator!=(const OrFilter &lhs, const OrFilter &rhs) {
 
 class BinaryFilter : public Filter {
 public:
-  BinaryFilter(FilterPtr left, BinaryFilter right);
-
-  virtual bool Equals(const Filter &filter) const override;
+  BinaryFilter(FilterPtr left, FilterPtr right);
 
 protected:
   FilterPtr left_;
@@ -204,7 +200,7 @@ inline bool operator!=(const NotFilter &lhs, const NotFilter &rhs) {
 
 class DenyAllFilter : public Filter {
 public:
-  DenyAllFilter();
+  DenyAllFilter() = default;
 
   DenyAllFilter(const Properties &properties);
 
@@ -223,7 +219,7 @@ inline bool operator!=(const DenyAllFilter &left, const DenyAllFilter &right) {
 
 class AcceptAllFilter : public Filter {
 public:
-  AcceptAllFilter();
+  AcceptAllFilter() = default;
 
   AcceptAllFilter(const Properties &properties);
 
@@ -242,11 +238,10 @@ inline bool operator!=(const AcceptAllFilter &left, const AcceptAllFilter &right
 
 class LogLevelMatchFilter : public Filter {
 public:
-  LogLevelMatchFilter();
 
   LogLevelMatchFilter(const Properties &properties);
 
-  LogLevelMatchFilter(LogLevel level);
+  LogLevelMatchFilter(LogLevel level = LogLevel::DEBUG);
 
   virtual Result Decide(LogEvent &log_event) const override;
 
@@ -271,9 +266,8 @@ inline bool operator!=(const LogLevelMatchFilter &left, const LogLevelMatchFilte
 
 class LogLevelRangeFilter : public Filter {
 public:
-  LogLevelRangeFilter();
 
-  LogLevelRangeFilter(LogLevel min, LogLevel max);
+  LogLevelRangeFilter(LogLevel min = LogLevel::TRACE, LogLevel max = LogLevel::ERROR);
 
   LogLevelRangeFilter(const Properties &properties);
 
