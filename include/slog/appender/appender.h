@@ -20,15 +20,16 @@ public:
   struct Result {
     bool is_success;
     std::string message;
-    char* data;
+    const char* data;
     int written;
     int len;
 
     Result();
-    Result(bool success, char* start, int length, int write_size = 0, const std::string& msg=std::string());
+    Result(bool success, const char* start, int length, int write_size = 0, const std::string& msg=std::string());
   };
 
-  Appender();
+  Appender(const std::string& name);
+
   virtual ~Appender();
 
   static std::shared_ptr<Appender> DefaultInstance();
@@ -36,14 +37,14 @@ public:
   /**
    * 关闭所持有的资源比如文件句柄、网络socket
    */
-  virtual void Close() = 0;
+  virtual void Close();
 
-  bool IsClosed() const ;
+  bool IsClosed() const;
 
   template<int SIZE>
-  virtual void Append(const FixedBuffer<SIZE>& buffer) = 0;
+  virtual void Append(const FixedBuffer<SIZE>& buffer);
 
-  virtual void Append(const char* data, int len) = 0;
+  virtual void Append(const char* data, int len);
 
   const std::string& name() const;
 
@@ -53,12 +54,11 @@ public:
 
 protected:
 
-  virtual Result DoAppend(const char* data, int len);
+  virtual Result DoAppend(const char* data, int len) = 0;
 
   std::string name_;
   std::unique_ptr<ErrorHandler> error_handler_;
-
-  friend class ErrorHandler;
+  bool is_closed_;
 };
 
 }

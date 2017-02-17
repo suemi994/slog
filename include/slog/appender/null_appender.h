@@ -14,7 +14,12 @@ namespace slog {
  * @author suemi
  */
 class NullAppender : public Appender {
+public:
+  NullAppender(const std::string& name="null_appender");
 
+protected:
+
+  virtual Result DoAppend(const char *data, int len) override;
 };
 
 }

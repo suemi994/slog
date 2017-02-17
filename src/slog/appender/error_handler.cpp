@@ -26,7 +26,10 @@ RetryHandler::RetryHandler(int retry_times, std::shared_ptr<Appender> appender) 
 }
 
 void RetryHandler::Handle(const Appender::Result &result) {
-  if(result.is_success) return;
+  if(result.is_success) {
+    Reset();
+    return;
+  }
   if(++fail_times_<=retry_times_ && owner_)
     owner_->Append(result.data+result.written,result.len-result.written);
 }

@@ -9,6 +9,15 @@
 
 namespace slog {
 
+class ConsoleAppender : public Appender {
+public:
+  ConsoleAppender(const std::string &name);
+
+protected:
+
+  virtual Result DoAppend(const char *data, int len) override;
+
+};
 
 }
 

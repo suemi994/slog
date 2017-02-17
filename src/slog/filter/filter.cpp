@@ -2,7 +2,7 @@
 * Created by suemi on 2017/1/18.
 */
 
-#include <stdexcept>
+#include <cassert>
 #include "slog/filter/filter.h"
 #include "slog/logging/log_event.h"
 
@@ -14,7 +14,9 @@ bool Filter::Equals(const Filter &filter) const {
   return this == &filter;
 }
 
-CompositeFilter::CompositeFilter(const FilterList &filters) : filters_(filters) {}
+CompositeFilter::CompositeFilter(const FilterList &filters) : filters_(filters) {
+  for(auto & ptr:filters) assert(ptr!= nullptr);
+}
 
 void CompositeFilter::Append(FilterPtr filter) {
   filters_.push_back(filter);
@@ -64,7 +66,9 @@ bool OrFilter::Equals(const Filter &filter) const {
   return slog::operator==(*this,*ptr);
 }
 
-BinaryFilter::BinaryFilter(FilterPtr left, FilterPtr right) : left_(left),right_(right) {}
+BinaryFilter::BinaryFilter(FilterPtr left, FilterPtr right) : left_(left),right_(right) {
+  assert(left!= nullptr && right!= nullptr);
+}
 
 BinaryAndFilter::BinaryAndFilter(FilterPtr left, FilterPtr right) : BinaryFilter(left, right) {}
 
@@ -90,7 +94,9 @@ bool BinaryOrFilter::Equals(const Filter &filter) const {
   return slog::operator==(*this,*ptr);
 }
 
-NotFilter::NotFilter(FilterPtr base) :base_(base) {}
+NotFilter::NotFilter(FilterPtr base) :base_(base) {
+  assert(base!= nullptr);
+}
 
 Filter::Result NotFilter::Decide(LogEvent &log_event) const {
   return base_->Decide(log_event)==Result::ACCEPT?Result::DENY:Result::ACCEPT;
@@ -135,8 +141,7 @@ bool LogLevelMatchFilter::Equals(const Filter &filter) const {
 }
 
 LogLevelRangeFilter::LogLevelRangeFilter(LogLevel min, LogLevel max) :min_level_(min),max_level_(max){
-  if(min>max)
-    throw std::invalid_argument("Max level should be greater than min level in LevelRangeFilter!");
+  assert(max>=min);
 }
 
 Filter::Result LogLevelRangeFilter::Decide(LogEvent &log_event) const {

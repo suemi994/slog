@@ -36,11 +36,11 @@ set(SOURCE_FILES
         test/slog/utils/test_properties.cpp
         src/slog/logging/logger.cpp
         src/slog/logging/log_event.cpp
-        include/slog/utils/time_helper.h
+        include/slog/utils/time_util.h
         test/slog/logging/test_log_event.cpp
         src/slog/logging/logger_factory.cpp
         src/slog/logging/log_scheduler.cpp
-        src/slog/appender/error_handler.cpp src/slog/filter/filter.cpp src/slog/filter/filter_builder.cpp)
+        src/slog/appender/error_handler.cpp src/slog/filter/filter.cpp src/slog/filter/filter_builder.cpp src/slog/appender/appender.cpp src/slog/appender/console_appender.cpp src/slog/appender/null_appender.cpp include/slog/appender/custom_appender.h src/slog/appender/custom_appender.cpp include/slog/utils/file_util.h include/slog/utils/string_util.h src/slog/utils/string_util.cpp src/slog/utils/file_util.cpp src/slog/utils/time_util.cpp include/slog/logging/log_guard.h src/slog/logging/log_guard.cpp src/slog/appender/file_appender.cpp)
 
 set(TEST_FILES
         src/slog/utils/formatter.cpp

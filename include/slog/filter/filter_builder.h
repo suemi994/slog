@@ -15,6 +15,7 @@ namespace slog {
  */
 class FilterBuilder {
 public:
+
   FilterBuilder &DenyAll();
 
   FilterBuilder &AcceptAll();
@@ -25,18 +26,23 @@ public:
 
   FilterBuilder &And(const FilterPtr filter);
 
-  FilterBuilder &And(const FilterList& filters);
+  FilterBuilder &And(const FilterList &filters);
 
   FilterBuilder &Or(const FilterPtr filter);
-  FilterBuilder &Or(const FilterList& filters);
+
+  FilterBuilder &Or(const FilterList &filters);
 
   FilterBuilder &Not(const FilterPtr filter);
+
+  FilterBuilder &Not();
 
   FilterPtr Build() const;
 
   FilterBuilder &Reset();
 
 private:
+  static FilterPtr accept_all_;
+  static FilterPtr deny_all_;
   FilterPtr filter_;
 };
 
