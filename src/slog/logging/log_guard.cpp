@@ -12,6 +12,9 @@ static char const PREFIX[] = "slog: ";
 static char const ERR_PREFIX[] = "slog:ERROR ";
 static char const WARN_PREFIX[] = "slog:WARN ";
 
+LogGuard* volatile LogGuard::instance_ = nullptr;
+std::mutex LogGuard::mutex_;
+
 LogGuard *LogGuard::Instance() {
   if(!instance_) return instance_;
   LogGuard* ptr = new LogGuard();

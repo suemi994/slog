@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <chrono>
+#include <thread>
 
 #include "slog/logging/log_level.h"
 #include "slog/utils/no_copyable.h"
@@ -17,6 +18,14 @@ namespace slog {
 class Logger;
 
 class Formatter;
+
+
+struct Location {
+  std::string line;
+  std::string method;
+  std::string source_file;
+  std::thread::id thread_id_;
+};
 
 /**
  * 包含日志内容以及携带每条日志相关信息
@@ -70,6 +79,8 @@ public:
 
   self &operator<<(const Buffer &v);
 
+  self& Locate(const std::string& file, const std::string& method, const std::string& line,std::thread::id tid);
+
   void Append(const char *data, int len);
 
   const Buffer &buffer() const;
@@ -98,6 +109,7 @@ private:
   Buffer buffer_;
   LogLevel level_;
   Time time_;
+  Location location_;
   std::weak_ptr<Logger> logger_;
 };
 

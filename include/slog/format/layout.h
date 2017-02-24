@@ -12,15 +12,22 @@ namespace slog {
 
 class LogEvent;
 
-class Layout : public NoCopyable{
+class Properties;
+
+class Layout : public NoCopyable {
 public:
   Layout() = default;
-  Layout(const std::string& name);
+
+  Layout(const std::string &name);
+
+  Layout(const Properties& properties);
+
   virtual ~Layout();
 
-  virtual void Reformat(LogEvent& log);
+  virtual void Reformat(LogEvent &log) = 0;
 
-  const std::string& name() const;
+  const std::string &name() const;
+
 protected:
   std::string name_;
 };

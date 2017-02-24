@@ -11,9 +11,9 @@ namespace slog {
 
 class SimpleLayout : public Layout {
 public:
-  SimpleLayout();
+  SimpleLayout(const std::string& name);
 
-  virtual ~SimpleLayout() override;
+  SimpleLayout(const Properties& properties);
 
   virtual void Reformat(LogEvent &log) override;
 };
