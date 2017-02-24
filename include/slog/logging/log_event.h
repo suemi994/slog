@@ -20,6 +20,9 @@ class Logger;
 class Formatter;
 
 
+/*
+ * 描述日志发生的位置信息
+ */
 struct Location {
   std::string line;
   std::string method;
@@ -83,11 +86,13 @@ public:
 
   void Append(const char *data, int len);
 
-  const Buffer &buffer() const;
+  Buffer &buffer() const;
 
   void Reset();
 
   LogLevel log_level() const;
+
+  Location& location() const;
 
   const Time& time() const;
 

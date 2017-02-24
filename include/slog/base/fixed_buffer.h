@@ -19,9 +19,11 @@ public:
 
   ~FixedBuffer();
 
-  void Append(const char *buffer, size_t len);
+  size_t Append(const char *buffer, size_t len);
 
-  void Forward(size_t len);
+  size_t Forward(size_t len);
+
+  bool Insert(int dst,const char* data, size_t len);
 
   void Reset();
 

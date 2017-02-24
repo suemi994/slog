@@ -3,7 +3,6 @@
 */
 
 #include <sstream>
-#include <algorithm>
 #include "slog/appender/file_appender.h"
 #include "slog/logging/log_guard.h"
 #include "slog/utils/file_util.h"
@@ -12,6 +11,7 @@
 namespace slog {
 
 using namespace std::chrono;
+using time_point = std::chrono::system_clock::time_point;
 
 const long DEFAULT_ROLLING_LOG_SIZE = 10 * 1024 * 1024L;
 const long MINIMUM_ROLLING_LOG_SIZE = 200 * 1024L;

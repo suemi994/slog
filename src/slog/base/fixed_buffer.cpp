@@ -17,16 +17,28 @@ FixedBuffer<SIZE>::~FixedBuffer() {
 }
 
 template<int SIZE>
-void FixedBuffer<SIZE>::Append(const char *buffer, size_t len) {
+size_t FixedBuffer<SIZE>::Append(const char *buffer, size_t len) {
   auto to_write_len = avail() < len ? avail() : len;
   memcpy(current(), buffer, to_write_len);
   pos_ += to_write_len;
+  return to_write_len;
 }
 
 template<int SIZE>
-void FixedBuffer::Forward(size_t len) {
+size_t FixedBuffer::Forward(size_t len) {
+  auto to_forward = avail() < len ? avail() : len;
+  pos_ += to_forward;
+  return to_forward;
+}
+
+template<int SIZE>
+bool FixedBuffer::Insert(int dst, const char *data, size_t len) {
+  if(dst<0 || dst>pos_ || avail()<len) return false; // 容量不够或参数不合法时什么也不做
+  char* start = dst + data_;
+  std::memcpy(start+len,start,pos_-dst);
+  std::memcpy(start,data,len);
   pos_ += len;
-  if (pos_ > SIZE) pos_ = SIZE;
+  return true;
 }
 
 template<int SIZE>
@@ -48,6 +60,7 @@ template<int SIZE>
 const char *FixedBuffer<SIZE>::data() const {
   return data_;
 }
+
 
 template<int SIZE>
 char *FixedBuffer<SIZE>::current() const {
