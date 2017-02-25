@@ -27,7 +27,7 @@ struct Location {
   std::string line;
   std::string method;
   std::string source_file;
-  std::thread::id thread_id_;
+  std::thread::id thread_id;
 };
 
 /**
@@ -93,6 +93,10 @@ public:
   LogLevel log_level() const;
 
   Location& location() const;
+
+  std::string message() const;
+
+  std::shared_ptr<Logger> logger() const;
 
   const Time& time() const;
 

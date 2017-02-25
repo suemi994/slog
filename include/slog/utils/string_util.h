@@ -39,6 +39,8 @@ public:
   static void Trim(std::string &str);
 
   static void RemoveEmpty(std::vector<std::string> &components, unsigned int reserve = 0);
+
+  static bool Environment(std::string& dst,const std::string& key);
 };
 
 }

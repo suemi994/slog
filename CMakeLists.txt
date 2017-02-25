@@ -57,7 +57,7 @@ set(SOURCE_FILES
         src/slog/logging/log_guard.cpp
         src/slog/appender/file_appender.cpp
         src/slog/format/layout.cpp
-        src/slog/format/simple_layout.cpp)
+        src/slog/format/simple_layout.cpp src/slog/format/pattern_layout.cpp)
 
 set(TEST_FILES
         src/slog/utils/formatter.cpp

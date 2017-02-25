@@ -11,7 +11,7 @@
 
 namespace slog {
 
-SimpleLayout::SimpleLayout(const std::string &name) : Layout(name) {}
+SimpleLayout::SimpleLayout() : Layout() {}
 
 SimpleLayout::SimpleLayout(const Properties &properties) : Layout(properties) {}
 

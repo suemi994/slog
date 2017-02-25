@@ -6,7 +6,7 @@
 #include <cctype>
 #include <vector>
 #include <functional>
-#include <algorithm>
+#include <cstdlib>
 #include "slog/utils/string_util.h"
 
 namespace slog {
@@ -97,6 +97,12 @@ void StringUtil::RemoveEmpty(std::vector<std::string> &components, unsigned int 
   components.erase(std::remove_if(components.begin()+reserve,components.end(),[](const std::string& str){
     return str.empty();
   }),components.end());
+}
+
+bool StringUtil::Environment(std::string &dst, const std::string &key) {
+  auto val = std::getenv(key.c_str());
+  if(val) dst = val;
+  return !!val;
 }
 
 using VectorStringIterator = std::vector<std::string,std::allocator<std::string>>::iterator;

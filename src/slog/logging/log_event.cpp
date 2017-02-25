@@ -168,6 +168,14 @@ LogEvent::self &LogEvent::operator<<(const std::string &v) {
   return *this;
 }
 
+LogEvent::self &
+LogEvent::Locate(const std::string &file, const std::string &method, const std::string &line, std::thread::id tid) {
+  location_.source_file = file;
+  location_.method = method;
+  location_.line = line;
+  location_.thread_id = tid;
+}
+
 LogEvent::self &LogEvent::operator<<(const LogEvent::Buffer &v) {
   buffer_.Append(v.data(), v.length());
   return *this;
@@ -187,6 +195,18 @@ void LogEvent::Reset() {
 
 LogLevel LogEvent::log_level() const {
   return level_;
+}
+
+Location &LogEvent::location() const {
+  return location_;
+}
+
+std::string LogEvent::message() const {
+  return buffer_.ToString();
+}
+
+std::shared_ptr<Logger> LogEvent::logger() const {
+  return logger_.lock();
 }
 
 const LogEvent::Time &LogEvent::time() const {

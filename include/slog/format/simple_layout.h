@@ -11,7 +11,7 @@ namespace slog {
 
 class SimpleLayout : public Layout {
 public:
-  SimpleLayout(const std::string& name);
+  SimpleLayout();
 
   SimpleLayout(const Properties& properties);
 
