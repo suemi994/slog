@@ -18,7 +18,7 @@ const long MINIMUM_ROLLING_LOG_SIZE = 200 * 1024L;
 
 FileAppender::FileAppender(const std::string &name, const std::string &filename, std::ios_base::openmode mode,
                            bool create_dirs) : Appender(name), file_path_(filename), mode_(mode),
-                                               create_dirs_(create_dirs) {
+                                               create_dirs_(create_dirs),is_immediate_(false) {
   Init();
 }
 
@@ -76,6 +76,14 @@ void FileAppender::Init() {
     LogGuard::Instance()->Error("Unable to open file: " + file_path_);
   out_.exceptions(std::ios_base::failbit | std::ios_base::badbit);
   return;
+}
+
+bool FileAppender::is_immediate() const {
+  return is_immediate_;
+}
+
+void FileAppender::immediate(bool val) {
+  is_immediate_ = val;
 }
 
 RollingFileAppender::RollingFileAppender(const std::string &name, const std::string &filename, int max_backup,
@@ -138,9 +146,9 @@ void CycleRollingFileAppender::Close() {
 }
 
 Appender::Result CycleRollingFileAppender::DoAppend(const char *data, int len) {
-  if(TimeUtil::Now()>next_rollover_time_)
+  if (TimeUtil::Now() > next_rollover_time_)
     RollOver();
-  return FileAppender::DoAppend(data,len);
+  return FileAppender::DoAppend(data, len);
 }
 
 void CycleRollingFileAppender::Init() {
@@ -148,8 +156,7 @@ void CycleRollingFileAppender::Init() {
   struct tm time = TimeUtil::LocalTime(now);
   time.tm_sec = 0;
 
-  switch(cycle_)
-  {
+  switch (cycle_) {
     case MONTHLY:
       time.tm_mday = 1;
       time.tm_hour = 0;
@@ -157,7 +164,7 @@ void CycleRollingFileAppender::Init() {
       break;
 
     case WEEKLY:
-      time.tm_mday -=(time.tm_wday % 7);
+      time.tm_mday -= (time.tm_wday % 7);
       time.tm_hour = 0;
       time.tm_min = 0;
       break;
@@ -168,12 +175,9 @@ void CycleRollingFileAppender::Init() {
       break;
 
     case TWICE_DAILY:
-      if(time.tm_hour >= 12)
-      {
+      if (time.tm_hour >= 12) {
         time.tm_hour = 12;
-      }
-      else
-      {
+      } else {
         time.tm_hour = 0;
       }
       time.tm_min = 0;
@@ -195,19 +199,19 @@ void CycleRollingFileAppender::RollOver() {
   out_.close();
   out_.clear();
 
-  FileUtil::RollOverFiles(schedule_file_,max_backup_);
+  FileUtil::RollOverFiles(schedule_file_, max_backup_);
 
   std::ostringstream backup_target_oss;
   backup_target_oss << schedule_file_ << "." << 1;
   std::string backup_target = backup_target_oss.str();
 
-  FileUtil::Rename(schedule_file_,backup_target);
-  FileUtil::Rename(file_path_,schedule_file_);
+  FileUtil::Rename(schedule_file_, backup_target);
+  FileUtil::Rename(file_path_, schedule_file_);
 
   Open(std::ios::out | std::ios::trunc);
 
   time_point now = TimeUtil::Now();
-  if(now>next_rollover_time_){
+  if (now > next_rollover_time_) {
     schedule_file_ = GenFileName(now);
     next_rollover_time_ = NextRollOverTime(now);
   }
@@ -218,72 +222,73 @@ bool CycleRollingFileAppender::ShouldRollOver() {
 }
 
 FileAppender::Time CycleRollingFileAppender::NextRollOverTime(const FileAppender::Time &t) const {
-  switch(cycle_)
-  {
-    case MONTHLY:
-    {
+  switch (cycle_) {
+    case MONTHLY: {
       struct tm next_month_time = TimeUtil::LocalTime(t);
       next_month_time.tm_mon += 1;
       next_month_time.tm_isdst = 0;
 
       time_point ret = TimeUtil::FromLocalTime(&next_month_time);
-      if(ret == time_point())
-      {
+      if (ret == time_point()) {
         LogGuard::Instance()->Error(
             "DailyRollingFileAppender::calculateNextRolloverTime()- setTime() returned error");
         // Set next rollover to 31 days in future.
-        ret =(t + seconds(2678400));
+        ret = (t + seconds(2678400));
       }
 
       return ret;
     }
 
     case WEEKLY:
-      return(t + seconds(7 * 24 * 60 * 60));
+      return (t + seconds(7 * 24 * 60 * 60));
 
     case DAILY:
-      return(t + seconds(24 * 60 * 60));
+      return (t + seconds(24 * 60 * 60));
 
     case TWICE_DAILY:
-      return(t + seconds(12 * 60 * 60));
+      return (t + seconds(12 * 60 * 60));
 
     case HOURLY:
-      return(t + seconds(60 * 60));
+      return (t + seconds(60 * 60));
 
     case MINUTELY:
-      return(t + seconds(60));
+      return (t + seconds(60));
 
-    default:
-    {
+    default: {
       LogGuard::Instance()->Error("DailyRollingFileAppender::calculateNextRolloverTime()- invalid schedule value");
-      return(t + seconds(24 * 60 * 60));	//DAILY
+      return (t + seconds(24 * 60 * 60));  //DAILY
     }
   };
 }
 
 std::string CycleRollingFileAppender::GenFileName(const time_point &t) const {
-  char const* pattern = 0;
-  switch(cycle_)
-  {
+  char const *pattern = 0;
+  switch (cycle_) {
     case MONTHLY:
-      pattern = "%Y-%m";			break;
+      pattern = "%Y-%m";
+      break;
     case WEEKLY:
-      pattern = "%Y-%W";			break;
+      pattern = "%Y-%W";
+      break;
     case DAILY:
-      pattern = "%Y-%m-%d";		break;
+      pattern = "%Y-%m-%d";
+      break;
     case TWICE_DAILY:
-      pattern = "%Y-%m-%d-%p";	break;
+      pattern = "%Y-%m-%d-%p";
+      break;
     case HOURLY:
-      pattern = "%Y-%m-%d-%H";	break;
+      pattern = "%Y-%m-%d-%H";
+      break;
     case MINUTELY:
-      pattern = "%Y-%m-%d-%H-%M";	break;
+      pattern = "%Y-%m-%d-%H-%M";
+      break;
     default:
       LogGuard::Instance()->Error("DailyRollingFileAppender::getFilename()- invalid schedule value");
   };
 
   std::string result(file_path_);
   result += ".";
-  result += TimeUtil::Format(t,pattern);
+  result += TimeUtil::Format(t, pattern);
   return result;
 }
 

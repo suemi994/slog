@@ -15,4 +15,8 @@ Appender::Result ConsoleAppender::DoAppend(const char *data, int len) {
   return Result(true,data,len,len,std::string());
 }
 
+bool ConsoleAppender::is_immediate() const {
+  return true;
+}
+
 }

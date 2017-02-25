@@ -12,21 +12,21 @@ static char const PREFIX[] = "slog: ";
 static char const ERR_PREFIX[] = "slog:ERROR ";
 static char const WARN_PREFIX[] = "slog:WARN ";
 
-LogGuard* volatile LogGuard::instance_ = nullptr;
+LogGuard *volatile LogGuard::instance_ = nullptr;
 std::mutex LogGuard::mutex_;
 
 LogGuard *LogGuard::Instance() {
-  if(!instance_) return instance_;
-  LogGuard* ptr = new LogGuard();
+  if (!instance_) return instance_;
+  LogGuard *ptr = new LogGuard();
   bool success = true;
   {
     std::lock_guard<std::mutex> lock(mutex_);
-    if(instance_==nullptr){
+    if (instance_ == nullptr) {
       instance_ = ptr;
-    }else
+    } else
       success = false;
   }
-  if(success) return ptr;
+  if (success) return ptr;
   delete ptr;
   return Instance();
 }
@@ -36,7 +36,7 @@ void LogGuard::Debug(const std::string &msg) const {
 }
 
 void LogGuard::Debug(const char *msg) const {
-  DoLog(PREFIX,msg, false);
+  DoLog(PREFIX, msg, false);
 }
 
 void LogGuard::Warn(const std::string &msg) const {
@@ -44,15 +44,15 @@ void LogGuard::Warn(const std::string &msg) const {
 }
 
 void LogGuard::Warn(const char *msg) const {
-  DoLog(WARN_PREFIX,msg, false);
+  DoLog(WARN_PREFIX, msg, false);
 }
 
 void LogGuard::Error(const std::string &msg, bool throw_flag) const {
-  Error(msg.c_str(),throw_flag);
+  Error(msg.c_str(), throw_flag);
 }
 
 void LogGuard::Error(const char *msg, bool throw_flag) const {
-  DoLog(ERR_PREFIX,msg,throw_flag);
+  DoLog(ERR_PREFIX, msg, throw_flag);
 }
 
 void LogGuard::Enable() {
@@ -66,15 +66,15 @@ void LogGuard::Disable() {
 LogGuard::LogGuard() : enable_internal_logging_(true) {}
 
 LogGuard::~LogGuard() {
-  LogGuard* volatile ptr = this;
-  if(ptr==instance_)
+  LogGuard *volatile ptr = this;
+  if (ptr == instance_)
     instance_ = nullptr;
 }
 
 void LogGuard::DoLog(const char *prefix, const char *msg, bool throw_flag) const {
-  if(enable_internal_logging_)
-    std::cout<<prefix<<msg<<std::endl;
-  if(throw_flag)
+  if (enable_internal_logging_)
+    std::cout << prefix << msg << std::endl;
+  if (throw_flag)
     throw std::runtime_error(msg);
 }
 

@@ -283,12 +283,12 @@ PatternLayout::PatternLayout(const std::string &pattern) : pattern_(pattern) {
 }
 
 void PatternLayout::Reformat(LogEvent &log) {
-  auto & buf = log.buffer();
+  auto &buf = log.buffer();
   std::ostringstream oss;
-  for(auto converter:converters_)
-    converter->Convert(oss,log);
+  for (auto converter:converters_)
+    converter->Convert(oss, log);
   buf.Reset();
-  log<<oss.str();
+  log << oss.str();
 }
 
 void PatternLayout::Init() {
@@ -302,7 +302,8 @@ void PatternLayout::Init() {
   }
   if (pattern_.empty()) {
     LogGuard::Instance()->Error("PatternLayout pattern is empty.  Using default...");
-    converters_.push_back(std::make_shared<BasicPatternConverter>(FormattingInfo(), BasicPatternConverter::MESSAGE_CONVERTER));
+    converters_.push_back(
+        std::make_shared<BasicPatternConverter>(FormattingInfo(), BasicPatternConverter::MESSAGE_CONVERTER));
   }
 }
 

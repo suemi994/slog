@@ -17,6 +17,8 @@ class NullAppender : public Appender {
 public:
   NullAppender(const std::string& name="null_appender");
 
+  virtual bool is_immediate() const override;
+
 protected:
 
   virtual Result DoAppend(const char *data, int len) override;

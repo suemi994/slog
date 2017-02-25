@@ -9,7 +9,11 @@ namespace slog {
 NullAppender::NullAppender(const std::string &name) : Appender(name) {}
 
 Appender::Result NullAppender::DoAppend(const char *data, int len) {
-  return Result(true,data,len,len,std::string());
+  return Result(true, data, len, len, std::string());
+}
+
+bool NullAppender::is_immediate() const {
+  return false;
 }
 
 }

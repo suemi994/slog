@@ -48,6 +48,8 @@ public:
 
   const std::string& name() const;
 
+  virtual bool is_immediate() const = 0;
+
   std::unique_ptr<ErrorHandler>& error_handler() const ;
 
   void set_error_handler(const std::unique_ptr<ErrorHandler>& handler);

@@ -22,11 +22,17 @@ public:
 
   void set_func(const CustomFunc& func);
 
+  virtual bool is_immediate() const override;
+
+  void immediate(bool val);
+
 protected:
 
   virtual Result DoAppend(const char* data,int len) override;
 
   CustomFunc func_;
+
+  bool is_immediate_;
 };
 
 }

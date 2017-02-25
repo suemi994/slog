@@ -13,6 +13,8 @@ class ConsoleAppender : public Appender {
 public:
   ConsoleAppender(const std::string &name);
 
+  virtual bool is_immediate() const override;
+
 protected:
 
   virtual Result DoAppend(const char *data, int len) override;

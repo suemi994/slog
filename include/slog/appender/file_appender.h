@@ -28,6 +28,9 @@ public:
 
   virtual void Close() override;
 
+  virtual bool is_immediate() const override;
+
+  void immediate(bool val);
 
 protected:
 
@@ -45,6 +48,7 @@ protected:
   std::ios_base::openmode mode_;
   Time reopen_time_;
   std::ofstream out_;
+  bool is_immediate_;
 };
 
 class RollingFileAppender : public FileAppender {
@@ -123,6 +127,7 @@ protected:
   std::string schedule_file_;
 
   Time next_rollover_time_;
+
 };
 
 }

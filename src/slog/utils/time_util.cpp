@@ -32,7 +32,7 @@ long TimeUtil::MicroSeconds(time_point timestamp) {
 std::string TimeUtil::Format(time_point timestamp, const std::string &fmt) {
   std::stringstream out;
   std::time_t tmp = system_clock::to_time_t(timestamp);
-  out<< std::put_time(std::localtime(&tmp),fmt.c_str());
+  out << std::put_time(std::localtime(&tmp), fmt.c_str());
   return out.str();
 
 /*

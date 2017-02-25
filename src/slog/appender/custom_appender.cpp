@@ -27,4 +27,12 @@ Appender::Result CustomAppender::DoAppend(const char *data, int len) {
   return func_(data,len);
 }
 
+bool CustomAppender::is_immediate() const {
+  return is_immediate_;
+}
+
+void CustomAppender::immediate(bool val) {
+  is_immediate_ = val;
+}
+
 }

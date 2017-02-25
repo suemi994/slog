@@ -39,7 +39,7 @@ public:
 
   void Stop();
 
-  void AddAppender(std::shared_ptr<Appender> appender_ptr, bool can_delay = true);
+  void AddAppender(std::shared_ptr<Appender> appender_ptr);
 
   void RemoveAllAppenders();
 
