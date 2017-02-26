@@ -5,6 +5,7 @@
 #include <cassert>
 #include "slog/filter/filter.h"
 #include "slog/logging/log_event.h"
+#include "slog/utils/properties.h"
 
 namespace slog {
 
@@ -15,7 +16,7 @@ bool Filter::Equals(const Filter &filter) const {
 }
 
 CompositeFilter::CompositeFilter(const FilterList &filters) : filters_(filters) {
-  for(auto & ptr:filters) assert(ptr!= nullptr);
+  for (auto &ptr:filters) assert(ptr != nullptr);
 }
 
 void CompositeFilter::Append(FilterPtr filter) {
@@ -24,8 +25,8 @@ void CompositeFilter::Append(FilterPtr filter) {
 
 void CompositeFilter::Remove(FilterPtr filter) {
   //此处删除严格按照对象的内存地址相同来
-  for(auto it=filters_.begin();it!=filters_.end();++it)
-    if(*it==filter){
+  for (auto it = filters_.begin(); it != filters_.end(); ++it)
+    if (*it == filter) {
       filters_.erase(it);
       break;
     }
@@ -38,120 +39,152 @@ void CompositeFilter::Clear() {
 AndFilter::AndFilter(const FilterList &filters) : CompositeFilter(filters) {}
 
 Filter::Result AndFilter::Decide(LogEvent &log_event) const {
-  for(auto & f:filters_)
-    if(f->Decide(log_event)==Result::DENY)
+  for (auto &f:filters_)
+    if (f->Decide(log_event) == Result::DENY)
       return Result::DENY;
   return Result::ACCEPT;
 }
 
 bool AndFilter::Equals(const Filter &filter) const {
-  const AndFilter* ptr = dynamic_cast<AndFilter*>(&filter);
-  if(!ptr) return false;
-  return slog::operator==(*this,*ptr);
+  const AndFilter *ptr = dynamic_cast<AndFilter *>(&filter);
+  if (!ptr) return false;
+  return slog::operator==(*this, *ptr);
 }
 
 
 OrFilter::OrFilter(const FilterList &filters) : CompositeFilter(filters) {}
 
 Filter::Result OrFilter::Decide(LogEvent &log_event) const {
-  for(auto & f:filters_)
-    if(f->Decide(log_event)==Result::ACCEPT)
+  for (auto &f:filters_)
+    if (f->Decide(log_event) == Result::ACCEPT)
       return Result::ACCEPT;
   return Result::DENY;
 }
 
 bool OrFilter::Equals(const Filter &filter) const {
-  const OrFilter* ptr = dynamic_cast<OrFilter*>(&filter);
-  if(!ptr) return false;
-  return slog::operator==(*this,*ptr);
+  const OrFilter *ptr = dynamic_cast<OrFilter *>(&filter);
+  if (!ptr) return false;
+  return slog::operator==(*this, *ptr);
 }
 
-BinaryFilter::BinaryFilter(FilterPtr left, FilterPtr right) : left_(left),right_(right) {
-  assert(left!= nullptr && right!= nullptr);
+BinaryFilter::BinaryFilter(FilterPtr left, FilterPtr right) : left_(left), right_(right) {
+  assert(left != nullptr && right != nullptr);
 }
 
 BinaryAndFilter::BinaryAndFilter(FilterPtr left, FilterPtr right) : BinaryFilter(left, right) {}
 
 Filter::Result BinaryAndFilter::Decide(LogEvent &log_event) const {
-  return left_->Decide(log_event)==Result::ACCEPT && right_->Decide(log_event)==Result::ACCEPT?Result::ACCEPT:Result::DENY;
+  return left_->Decide(log_event) == Result::ACCEPT && right_->Decide(log_event) == Result::ACCEPT ? Result::ACCEPT
+                                                                                                   : Result::DENY;
 }
 
 bool BinaryAndFilter::Equals(const Filter &filter) const {
-  const BinaryAndFilter* ptr = dynamic_cast<BinaryAndFilter*>(&filter);
-  if(!ptr) return false;
-  return slog::operator==(*this,*ptr);
+  const BinaryAndFilter *ptr = dynamic_cast<BinaryAndFilter *>(&filter);
+  if (!ptr) return false;
+  return slog::operator==(*this, *ptr);
 }
 
 BinaryOrFilter::BinaryOrFilter(FilterPtr left, FilterPtr right) : BinaryFilter(left, right) {}
 
 Filter::Result BinaryOrFilter::Decide(LogEvent &log_event) const {
-  return left_->Decide(log_event)==Result::ACCEPT || right_->Decide(log_event)==Result::ACCEPT?Result::ACCEPT:Result::DENY;
+  return left_->Decide(log_event) == Result::ACCEPT || right_->Decide(log_event) == Result::ACCEPT ? Result::ACCEPT
+                                                                                                   : Result::DENY;
 }
 
 bool BinaryOrFilter::Equals(const Filter &filter) const {
-  const BinaryOrFilter* ptr = dynamic_cast<BinaryOrFilter*>(&filter);
-  if(!ptr) return false;
-  return slog::operator==(*this,*ptr);
+  const BinaryOrFilter *ptr = dynamic_cast<BinaryOrFilter *>(&filter);
+  if (!ptr) return false;
+  return slog::operator==(*this, *ptr);
 }
 
-NotFilter::NotFilter(FilterPtr base) :base_(base) {
-  assert(base!= nullptr);
+NotFilter::NotFilter(FilterPtr base) : base_(base) {
+  assert(base != nullptr);
 }
 
 Filter::Result NotFilter::Decide(LogEvent &log_event) const {
-  return base_->Decide(log_event)==Result::ACCEPT?Result::DENY:Result::ACCEPT;
+  return base_->Decide(log_event) == Result::ACCEPT ? Result::DENY : Result::ACCEPT;
 }
 
 bool NotFilter::Equals(const Filter &filter) const {
-  const NotFilter* ptr = dynamic_cast<NotFilter*>(&filter);
-  if(!ptr) return false;
-  return slog::operator==(*this,*ptr);
+  const NotFilter *ptr = dynamic_cast<NotFilter *>(&filter);
+  if (!ptr) return false;
+  return slog::operator==(*this, *ptr);
 }
+
+DenyAllFilter::DenyAllFilter(const Properties &properties) {}
 
 Filter::Result DenyAllFilter::Decide(LogEvent &log_event) const {
   return Result::DENY;
 }
 
 bool DenyAllFilter::Equals(const Filter &filter) const {
-  const DenyAllFilter* ptr = dynamic_cast<DenyAllFilter*>(&filter);
-  if(!ptr) return false;
-  return slog::operator==(*this,*ptr);
+  const DenyAllFilter *ptr = dynamic_cast<DenyAllFilter *>(&filter);
+  if (!ptr) return false;
+  return slog::operator==(*this, *ptr);
 }
+
+AcceptAllFilter::AcceptAllFilter(const Properties &properties) {}
 
 Filter::Result AcceptAllFilter::Decide(LogEvent &log_event) const {
   return Result::ACCEPT;
 }
 
 bool AcceptAllFilter::Equals(const Filter &filter) const {
-  const AcceptAllFilter* ptr = dynamic_cast<AcceptAllFilter*>(&filter);
-  if(!ptr) return false;
-  return slog::operator==(*this,*ptr);
+  const AcceptAllFilter *ptr = dynamic_cast<AcceptAllFilter *>(&filter);
+  if (!ptr) return false;
+  return slog::operator==(*this, *ptr);
+}
+
+LogLevelMatchFilter::LogLevelMatchFilter(const Properties &properties) {
+  auto str = properties.GetProperty("LogLevelToMatch");
+  try {
+    match_level_ = slog::FromString(str);
+  } catch(...){
+    match_level_ = LogLevel::INFO;
+  }
 }
 
 LogLevelMatchFilter::LogLevelMatchFilter(LogLevel level) : match_level_(level) {}
 
 Filter::Result LogLevelMatchFilter::Decide(LogEvent &log_event) const {
-  return log_event.log_level()>=match_level_?Result::ACCEPT:Result::DENY;
+  return log_event.log_level() >= match_level_ ? Result::ACCEPT : Result::DENY;
 }
 
 bool LogLevelMatchFilter::Equals(const Filter &filter) const {
-  const LogLevelMatchFilter* ptr = dynamic_cast<LogLevelMatchFilter*>(&filter);
-  if(!ptr) return false;
-  return slog::operator==(*this,*ptr);
+  const LogLevelMatchFilter *ptr = dynamic_cast<LogLevelMatchFilter *>(&filter);
+  if (!ptr) return false;
+  return slog::operator==(*this, *ptr);
 }
 
-LogLevelRangeFilter::LogLevelRangeFilter(LogLevel min, LogLevel max) :min_level_(min),max_level_(max){
-  assert(max>=min);
+LogLevelRangeFilter::LogLevelRangeFilter(LogLevel min, LogLevel max) : min_level_(min), max_level_(max) {
+  assert(max >= min);
+}
+
+LogLevelRangeFilter::LogLevelRangeFilter(const Properties &properties) {
+  auto min_str = properties.GetProperty("LogLevelMin");
+  auto max_str = properties.GetProperty("LogLevelMax");
+
+  try {
+    min_level_ = slog::FromString(min_str);
+  }catch(...){
+    min_level_ = LogLevel::TRACE;
+  }
+
+  try {
+    max_level_ = slog::FromString(max_str);
+  }catch(...){
+    max_level_ = LogLevel::ERROR;
+  }
 }
 
 Filter::Result LogLevelRangeFilter::Decide(LogEvent &log_event) const {
-  return log_event.log_level()>=min_level_ && log_event.log_level()<=max_level_?Result::ACCEPT:Result::DENY;
+  return log_event.log_level() >= min_level_ && log_event.log_level() <= max_level_ ? Result::ACCEPT : Result::DENY;
 }
 
 bool LogLevelRangeFilter::Equals(const Filter &filter) const {
-  const LogLevelRangeFilter* ptr = dynamic_cast<LogLevelRangeFilter*>(&filter);
-  if(!ptr) return false;
-  return slog::operator==(*this,*ptr);
+  const LogLevelRangeFilter *ptr = dynamic_cast<LogLevelRangeFilter *>(&filter);
+  if (!ptr) return false;
+  return slog::operator==(*this, *ptr);
 }
 
 }
