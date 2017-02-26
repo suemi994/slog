@@ -24,7 +24,6 @@ public:
 
   virtual void Reformat(LogEvent &log) = 0;
 
-  const std::string &name() const;
 };
 
 }

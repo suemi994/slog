@@ -11,7 +11,7 @@ set(SOURCE_FILES
         include/slog/logging/logger.h
         include/slog/utils/no_copyable.h
         include/slog/logging/logger_factory.h
-        include/slog/base/configuration.h
+        include/slog/base/configurator.h
         include/slog/base/fixed_buffer.h
         include/slog/appender/appender.h
         include/slog/appender/file_appender.h

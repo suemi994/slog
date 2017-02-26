@@ -48,7 +48,7 @@ private:
   static void CookieStart();
   static void CookieEnd();
 
-  int pos_;
+  size_t pos_;
   char data_[SIZE];
 };
 

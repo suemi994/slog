@@ -12,6 +12,7 @@
 #include "slog/logging/log_guard.h"
 #include "slog/utils/string_util.h"
 #include "slog/utils/time_util.h"
+#include "slog/utils/properties.h"
 
 namespace slog {
 
@@ -280,6 +281,14 @@ void PatternParser::FinalizeConverter(char c) {
 
 PatternLayout::PatternLayout(const std::string &pattern) : pattern_(pattern) {
   Init();
+}
+
+PatternLayout::PatternLayout(const Properties &properties) : Layout(properties) {
+  if(properties.Exists("Pattern")){
+    pattern_ = properties.GetProperty("Pattern");
+  }else {
+    LogGuard::Instance()->Error("ConversionPattern not specified in properties", true);
+  }
 }
 
 void PatternLayout::Reformat(LogEvent &log) {

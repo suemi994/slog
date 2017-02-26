@@ -6,12 +6,8 @@
 
 namespace slog {
 
-Layout::Layout(const std::string &name) :name_(name) {}
+Layout::Layout(const Properties &properties) {}
 
 Layout::~Layout() {}
-
-const std::string &Layout::name() const {
-  return name_;
-}
 
 }
