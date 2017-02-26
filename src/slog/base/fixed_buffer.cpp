@@ -33,10 +33,10 @@ size_t FixedBuffer::Forward(size_t len) {
 
 template<int SIZE>
 bool FixedBuffer::Insert(int dst, const char *data, size_t len) {
-  if(dst<0 || dst>pos_ || avail()<len) return false; // 容量不够或参数不合法时什么也不做
-  char* start = dst + data_;
-  std::memcpy(start+len,start,pos_-dst);
-  std::memcpy(start,data,len);
+  if (dst < 0 || dst > pos_ || avail() < len) return false; // 容量不够或参数不合法时什么也不做
+  char *start = dst + data_;
+  std::memcpy(start + len, start, pos_ - dst);
+  std::memcpy(start, data, len);
   pos_ += len;
   return true;
 }
@@ -68,12 +68,13 @@ char *FixedBuffer<SIZE>::current() const {
 }
 
 template<int SIZE>
-int FixedBuffer<SIZE>::length() const {
+size_t FixedBuffer<SIZE>::length() const {
   return pos_;
 }
 
 template<int SIZE>
-int FixedBuffer<SIZE>::avail() const {
+size_t FixedBuffer<SIZE>::avail() const {
+  if (sizeof(data_) < pos_) return 0;
   return sizeof(data_) - pos_;
 }
 

@@ -11,7 +11,7 @@
 
 namespace slog {
 
-template<int SIZE>
+template<size_t SIZE>
 class FixedBuffer {
 public:
 
@@ -35,9 +35,9 @@ public:
 
   char *current() const;
 
-  int length() const;
+  size_t length() const;
 
-  int avail() const;
+  size_t avail() const;
 
   void set_cookie(std::function<void()> cookie);
 
@@ -53,8 +53,8 @@ private:
 };
 
 namespace detail {
-const int SMALL_BUFFER_SIZE = 1024;
-const int LARGE_BUFFER_SIZE = 1024*4096;
+const size_t SMALL_BUFFER_SIZE = 1024;
+const size_t LARGE_BUFFER_SIZE = 1024*4096;
 }
 
 }

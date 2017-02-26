@@ -11,6 +11,7 @@
 #include <condition_variable>
 #include "slog/utils/no_copyable.h"
 #include "slog/base/fixed_buffer.h"
+#include "slog/utils/count_down_latch.h"
 
 namespace slog {
 
@@ -27,13 +28,12 @@ class LogScheduler : public NoCopyable {
   using BufferList = std::vector<BufferPtr>;
 public:
   LogScheduler(int flush_interval);
+
   ~LogScheduler();
 
-  static std::shared_ptr<LogScheduler> DefaultInstance();
+  void Append(const char *buf, size_t len);
 
-  void Append(const char* buf, int len);
-
-  void Flush();
+  void Flush(BufferPtr& buf);
 
   void Start();
 
@@ -45,12 +45,15 @@ public:
 
   void RemoveAppender(std::shared_ptr<Appender> appender_ptr);
 
-  void RemoveAppender(const std::string& appender_name);
+  void RemoveAppender(const std::string &appender_name);
 
   bool is_running() const;
 
 private:
 
+  /*
+   * 守护线程，负责实际上调用appender写入各个目的地
+   */
   void DaemonFunc();
 
   AppenderList delay_appenders_;
@@ -58,15 +61,15 @@ private:
 
   bool is_running_;
   const int flush_interval_;
-  std::thread thread_;
+  std::thread *thread_;
 
   std::condition_variable cond_;
-  std::mutex mutex_;
+  mutable std::mutex mutex_;
+  CountDownLatch latch_;
 
   BufferPtr current_buffer_;
   BufferPtr next_buffer_;
   BufferList buffers_;
-  BufferList buffers_to_write_;
 };
 
 }

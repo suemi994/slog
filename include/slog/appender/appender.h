@@ -44,7 +44,7 @@ public:
   template<int SIZE>
   virtual void Append(const FixedBuffer<SIZE>& buffer);
 
-  virtual void Append(const char* data, int len);
+  virtual void Append(const char *data, size_t len);
 
   const std::string& name() const;
 

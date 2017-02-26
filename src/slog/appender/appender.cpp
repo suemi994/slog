@@ -38,7 +38,7 @@ void Appender::Append(const FixedBuffer<SIZE> &buffer) {
   Append(buffer.data(), buffer.length());
 }
 
-void Appender::Append(const char *data, int len) {
+void Appender::Append(const char *data, size_t len) {
   auto res = DoAppend(data,len);
   if(!res.is_success && error_handler_!= nullptr)
     error_handler_->Handle(res);
