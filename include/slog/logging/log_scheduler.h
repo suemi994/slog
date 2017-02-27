@@ -17,6 +17,8 @@ namespace slog {
 
 class Appender;
 
+class Properties;
+
 /**
  * 集中处理所有的日志写入工作，委托各个Appender实际输出到各个目的输出
  * @author suemi
@@ -28,6 +30,8 @@ class LogScheduler : public NoCopyable {
   using BufferList = std::vector<BufferPtr>;
 public:
   LogScheduler(int flush_interval);
+
+  LogScheduler(const Properties& properties);
 
   ~LogScheduler();
 
@@ -60,7 +64,7 @@ private:
   AppenderList immediate_appenders_;
 
   bool is_running_;
-  const int flush_interval_;
+  int flush_interval_;
   std::thread *thread_;
 
   std::condition_variable cond_;

@@ -29,12 +29,9 @@ public:
   Logger(const std::string& name);
 
   const std::string& name() const;
-  bool IsEnableFor(LogLevel level) const ;
 
   void Submit(LogEvent& log);
 
-  LogLevel log_level() const ;
-  void set_log_level(LogLevel level);
 
   std::shared_ptr<Layout> layout() const;
   void set_layout(const std::shared_ptr<Layout> layout);
@@ -44,7 +41,6 @@ public:
 private:
   std::shared_ptr<LogScheduler> scheduler_;
   std::string name_;
-  LogLevel level_;
   std::shared_ptr<Layout> layout_;
   std::shared_ptr<Filter> filter_;
 };

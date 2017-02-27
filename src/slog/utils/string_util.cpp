@@ -7,6 +7,8 @@
 #include <vector>
 #include <functional>
 #include <cstdlib>
+#include <sstream>
+#include <cassert>
 #include "slog/utils/string_util.h"
 
 namespace slog {
@@ -46,6 +48,56 @@ std::string StringUtil::Join(Iterator first, Iterator last, const std::string &s
 
 std::string StringUtil::ConvertInt(int val) {
   return std::to_string(val);
+}
+
+bool StringUtil::ParseBool(bool &val, const std::string &str) {
+  std::istringstream iss(str);
+  std::string word;
+
+  // Read a single "word".
+  iss>>word;
+  if (!iss)
+    return false;
+
+  // Following extraction of a character should fail
+  // because there should only be a single "word".
+
+  char ch;
+  if (iss >> ch)
+    return false;
+
+  // Compare with "true" and "false".
+
+  std::transform(word.begin(), word.end(), word.begin(), ::tolower);
+  bool result = true;
+  if (word == "true")
+    val = true;
+  else if (word == "false")
+    val = false;
+
+    // Try to interpret the "word" as a number.
+
+  else {
+    // Seek back to the start of stream.
+
+    iss.clear();
+    iss.seekg(0);
+    assert(iss);
+
+    // Extract value.
+
+    long lval;
+    iss >> lval;
+
+    // The extraction should be successful and
+    // following extraction of a characters should fail.
+
+    result = !!iss && !(iss >> ch);
+    if (result)
+      val = !!lval;
+  }
+
+  return result;
 }
 
 int StringUtil::ParseInt(const std::string &str) {

@@ -10,14 +10,10 @@
 
 namespace slog {
 
-Logger::Logger(const std::string &name, std::shared_ptr<LogScheduler> scheduler):
-    name_(name)
-    ,scheduler_(scheduler)
-    ,level_(LogLevel::DEBUG){
+Logger::Logger(const std::string &name, std::shared_ptr<LogScheduler> scheduler) :
+    name_(name), scheduler_(scheduler) {}
 
-}
-
-Logger::Logger(const std::string &name):name_(name),level_(LogLevel::DEBUG) {
+Logger::Logger(const std::string &name) : name_(name) {
 
 }
 
@@ -25,27 +21,15 @@ const std::string &Logger::name() const {
   return name_;
 }
 
-bool Logger::IsEnableFor(LogLevel level) const {
-  return level_<level;
-}
-
 void Logger::Submit(LogEvent &log) {
-  if(scheduler_== nullptr) return;
-  if(!IsEnableFor(log.log_level())) return;
-  if(filter_!= nullptr && filter_->Decide(log) == Filter::Result::DENY)
+  if (scheduler_ == nullptr) return;
+  if (filter_ != nullptr && filter_->Decide(log) == Filter::Result::DENY)
     return;
-  if(layout_!= nullptr) layout_->Reformat(log);
-  auto & buf = log.buffer();
-  scheduler_->Append(buf.data(),buf.length());
+  if (layout_ != nullptr) layout_->Reformat(log);
+  auto &buf = log.buffer();
+  scheduler_->Append(buf.data(), buf.length());
 }
 
-LogLevel Logger::log_level() const {
-  return level_;
-}
-
-void Logger::set_log_level(LogLevel level) {
-  level_ = level;
-}
 
 std::shared_ptr<Layout> Logger::layout() const {
   return layout_;

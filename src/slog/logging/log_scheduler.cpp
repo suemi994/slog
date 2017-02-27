@@ -8,6 +8,7 @@
 #include "slog/appender/appender.h"
 #include "slog/utils/time_util.h"
 #include "slog/logging/log_guard.h"
+#include "slog/utils/properties.h"
 
 namespace slog {
 
@@ -19,6 +20,12 @@ LogScheduler::LogScheduler(int flush_interval) : flush_interval_(flush_interval)
   current_buffer_->Bezero();
   next_buffer_->Bezero();
   buffers_.reserve(16);
+}
+
+LogScheduler::LogScheduler(const Properties &properties) : LogScheduler(3){
+  int interval;
+  if(properties.GetInt(interval,"flushInterval"))
+    flush_interval_ = interval;
 }
 
 LogScheduler::~LogScheduler() {

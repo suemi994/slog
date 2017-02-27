@@ -27,6 +27,8 @@ public:
 
   static int ParseInt(const std::string &str);
 
+  static bool ParseBool(bool& val, const std::string& str);
+
   template<class OutputIterator>
   static void Tokenize(const std::string &str, char ch, OutputIterator out, bool collapse);
 

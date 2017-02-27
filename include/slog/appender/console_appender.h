@@ -9,9 +9,13 @@
 
 namespace slog {
 
+class Properties;
+
 class ConsoleAppender : public Appender {
 public:
   ConsoleAppender(const std::string &name);
+
+  ConsoleAppender(const Properties& prop);
 
   virtual bool is_immediate() const override;
 

@@ -6,10 +6,11 @@
 #include "slog/logging/log_scheduler.h"
 #include "slog/appender/appender.h"
 #include "slog/logging/logger.h"
+#include "slog/base/configurator.h"
 
 namespace slog {
 
-void LoggerFactory::Init(const Configuration &cfg) {
+void LoggerFactory::Init(Configurator &cfg) {
   coordinator.Initialize(cfg);
 }
 
@@ -17,13 +18,9 @@ std::shared_ptr<Logger> LoggerFactory::GetLogger(const std::string &name) {
   return coordinator.SafeGetLogger(name);
 }
 
-LoggerFactory::Coordinator::Coordinator() : is_ready_(false) {
+LoggerFactory::Coordinator::Coordinator() : is_ready_(false) {}
 
-}
-
-LoggerFactory::Coordinator::~Coordinator() {
-
-}
+LoggerFactory::Coordinator::~Coordinator() {}
 
 std::shared_ptr<Logger> LoggerFactory::Coordinator::SafeGetLogger(const std::string &name) {
   if (!is_ready_.load())
@@ -41,7 +38,6 @@ std::shared_ptr<Logger> LoggerFactory::Coordinator::SafeGetLogger(const std::str
   if (root == nullptr)
     return nullptr;
   ptr = std::make_shared<Logger>(name);
-  ptr->set_log_level(root->log_level());
   ptr->set_layout(root->layout());
   ptr->set_filter(root->filter());
 
@@ -55,7 +51,7 @@ std::shared_ptr<LogScheduler> LoggerFactory::Coordinator::SafeGetScheduler() {
     return nullptr;
   std::shared_ptr<LogScheduler> ptr = scheduler_.load();
   if (ptr != nullptr) return ptr;
-  ptr = LogScheduler::DefaultInstance();
+  ptr = std::make_shared<LogScheduler>();
   bool res = SafeSetScheduler(ptr);
   return scheduler_.load();
 }
@@ -105,8 +101,26 @@ bool LoggerFactory::Coordinator::ready() const {
   return is_ready_.load();
 }
 
-void LoggerFactory::Coordinator::Initialize(const Configuration &cfg) {
-  // TODO
+void LoggerFactory::Coordinator::Initialize(Configurator &cfg) {
+  if(is_ready_.load()) Reset();
+
+  {
+    boost::unique_lock<boost::shared_mutex> appenders_lock(appenders_mutex_);
+    boost::unique_lock<boost::shared_mutex> loggers_lock(loggers_mutex_);
+    cfg.Configure();
+    SafeSetScheduler(cfg.scheduler());
+    auto & appenders = cfg.appenders();
+    for(auto it=appenders.begin();it!=appenders.end();++it)
+      SafeSetAppender(it->first,it->second);
+    SafeSetRootLogger(cfg.root_logger());
+    auto & loggers = cfg.loggers();
+    for(auto it=loggers.begin();it!=loggers.end();++it)
+      SafeSetLogger(it->first,it->second);
+
+    scheduler_.load()->Start();
+  }
+
+  cfg.Reset();
 }
 
 bool LoggerFactory::Coordinator::SafeSetScheduler(std::shared_ptr<LogScheduler> scheduler) {

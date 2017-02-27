@@ -28,9 +28,11 @@ public:
 
   bool Exists(const std::string &key) const;
 
+  bool ExistPrefix(const std::string& prefix);
+
   bool Exists(const char *key) const;
 
-  int Size() const;
+  size_t Size() const;
 
   const std::string &GetProperty(const std::string &key) const;
 
@@ -53,6 +55,8 @@ public:
   bool GetLong(long &val, const std::string &key) const;
 
   bool GetFloat(float &val, const std::string &key) const;
+
+  StringMap& GetRawValues() const;
 
   static const char PROPERTIES_COMMENT_CHAR;
 

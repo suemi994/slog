@@ -32,7 +32,7 @@ class Configurator;
  */
 class LoggerFactory {
 public:
-  static void Init(const Configurator &cfg);
+  static void Init(Configurator &cfg);
 
   static std::shared_ptr<Logger> GetLogger(const std::string &name = "");
 
@@ -67,7 +67,7 @@ private:
 
   private:
 
-    void Initialize(const Configurator &cfg);
+    void Initialize(Configurator &cfg);
 
     bool SafeSetScheduler(std::shared_ptr<LogScheduler> scheduler);
 
