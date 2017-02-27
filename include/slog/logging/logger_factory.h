@@ -21,7 +21,7 @@ class LogScheduler;
 
 class Appender;
 
-class Configuration;
+class Configurator;
 
 
 /**
@@ -32,7 +32,7 @@ class Configuration;
  */
 class LoggerFactory {
 public:
-  static void Init(const Configuration &cfg);
+  static void Init(const Configurator &cfg);
 
   static std::shared_ptr<Logger> GetLogger(const std::string &name = "");
 
@@ -67,7 +67,7 @@ private:
 
   private:
 
-    void Initialize(const Configuration &cfg);
+    void Initialize(const Configurator &cfg);
 
     bool SafeSetScheduler(std::shared_ptr<LogScheduler> scheduler);
 
@@ -77,7 +77,7 @@ private:
 
     bool SafeSetAppender(const std::string &name, const std::shared_ptr<Appender> appender);
 
-    std::unique_ptr<Configuration> configuration_;
+    std::unique_ptr<Configurator> configuration_;
 
     std::unordered_map<std::string, std::shared_ptr<Logger>> loggers_;
     std::unordered_map<std::string, std::shared_ptr<Appender>> appenders_;

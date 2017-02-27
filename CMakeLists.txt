@@ -57,7 +57,7 @@ set(SOURCE_FILES
         src/slog/logging/log_guard.cpp
         src/slog/appender/file_appender.cpp
         src/slog/format/layout.cpp
-        src/slog/format/simple_layout.cpp src/slog/format/pattern_layout.cpp include/slog/utils/count_down_latch.h src/slog/utils/count_down_latch.cpp)
+        src/slog/format/simple_layout.cpp src/slog/format/pattern_layout.cpp include/slog/utils/count_down_latch.h src/slog/utils/count_down_latch.cpp src/slog/logging/log_macros.cpp src/slog/logging/log_level.cpp.cpp)
 
 set(TEST_FILES
         src/slog/utils/formatter.cpp

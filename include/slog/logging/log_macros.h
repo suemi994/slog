@@ -13,25 +13,22 @@
 
 namespace slog {
 
-inline std::string MethodName(const std::string& pretty_function){
-  size_t end = pretty_function.find("(");
-  size_t start = pretty_function.find(" ")+1;
-  return pretty_function.substr(start,end-start);
-}
+std::string MethodName(const std::string& pretty_function) ;
 
-#define __METHOD__ MethodName(__PRETTY_FUNCTION__)
+
+#define __METHOD__ slog::MethodName(__PRETTY_FUNCTION__)
 
 #define __THREAD__ std::this_thread::get_id()
 
-#define LOG_TRACE(logger) LogEvent(LogLevel::TRACE,logger).Locate(__FILE__,__METHOD__,__LINE__,__THREAD__)
+#define LOG_TRACE(logger) LogEvent(slog::LogLevel::TRACE,logger).Locate(__FILE__,__METHOD__,__LINE__,__THREAD__)
 
-#define LOG_DEBUG(logger) LogEvent(LogLevel::DEBUG,logger).Locate(__FILE__,__METHOD__,__LINE__,__THREAD__)
+#define LOG_DEBUG(logger) LogEvent(slog::LogLevel::DEBUG,logger).Locate(__FILE__,__METHOD__,__LINE__,__THREAD__)
 
-#define LOG_INFO(logger) LogEvent(LogLevel::INFO,logger).Locate(__FILE__,__METHOD__,__LINE__,__THREAD__)
+#define LOG_INFO(logger) LogEvent(slog::LogLevel::INFO,logger).Locate(__FILE__,__METHOD__,__LINE__,__THREAD__)
 
-#define LOG_WARN(logger) LogEvent(LogLevel::WARN,logger).Locate(__FILE__,__METHOD__,__LINE__,__THREAD__)
+#define LOG_WARN(logger) LogEvent(slog::LogLevel::WARN,logger).Locate(__FILE__,__METHOD__,__LINE__,__THREAD__)
 
-#define LOG_ERROR(logger) LogEvent(LogLevel::ERROR,logger).Locate(__FILE__,__METHOD__,__LINE__,__THREAD__)
+#define LOG_ERROR(logger) LogEvent(slog::LogLevel::ERROR,logger).Locate(__FILE__,__METHOD__,__LINE__,__THREAD__)
 
 #define LOG(logger,level) LogEvent(level,logger).Locate(__FILE__,__METHOD__,__LINE__,__THREAD__)
 }
