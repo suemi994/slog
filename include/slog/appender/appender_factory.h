@@ -15,12 +15,12 @@ class ErrorHandler;
 
 class Properties;
 
-class AppenderFactory : public ObjectFactory<Appender,Properties> {
+class AppenderFactory : public ObjectFactory<Appender, Properties> {
 public:
   AppenderFactory();
 };
 
-class ErrorHandlerFactory : public ObjectFactory<ErrorHandler>{
+class ErrorHandlerFactory : public ObjectFactory<ErrorHandler> {
 public:
   ErrorHandlerFactory();
 };

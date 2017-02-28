@@ -7,6 +7,7 @@
 #include "slog/logging/log_guard.h"
 #include "slog/utils/file_util.h"
 #include "slog/utils/time_util.h"
+#include "slog/utils/properties.h"
 
 namespace slog {
 
@@ -18,7 +19,20 @@ const long MINIMUM_ROLLING_LOG_SIZE = 200 * 1024L;
 
 FileAppender::FileAppender(const std::string &name, const std::string &filename, std::ios_base::openmode mode,
                            bool create_dirs) : Appender(name), file_path_(filename), mode_(mode),
-                                               create_dirs_(create_dirs),is_immediate_(false) {
+                                               create_dirs_(create_dirs), is_immediate_(false) {
+  Init();
+}
+
+FileAppender::FileAppender(const Properties &properties, std::ios_base::openmode mode) : Appender(properties) {
+  bool create_dirs;
+  bool result = properties.GetBool(create_dirs, "createDirs");
+  create_dirs_ = result ? create_dirs : false;
+
+  file_path_ = properties.GetProperty("path", "./log.txt");
+
+  int delay;
+  result = properties.GetInt(delay, "reopenDelay");
+  reopen_delay_ = result ? delay : 1;
   Init();
 }
 
@@ -92,12 +106,38 @@ RollingFileAppender::RollingFileAppender(const std::string &name, const std::str
                                                                                                         create_dirs),
                                                                                            max_backup_(max_backup) {}
 
+RollingFileAppender::RollingFileAppender(const Properties &properties, std::ios_base::openmode mode) : FileAppender(
+    properties, mode) {
+  int max_backup;
+  bool result = properties.GetInt(max_backup, "maxBackup");
+  max_backup_ = result ? max_backup : 1;
+}
+
 CapacityRollingFileAppender::CapacityRollingFileAppender(const std::string &name, const std::string &filename,
                                                          long max_file_size, int max_backup,
                                                          std::ios_base::openmode mode, bool create_dirs)
     : RollingFileAppender(name, filename, max_backup, mode, create_dirs), capacity_(max_file_size) {
   Init();
 }
+
+CapacityRollingFileAppender::CapacityRollingFileAppender(const Properties &properties, std::ios_base::openmode mode)
+    : RollingFileAppender(properties, mode) {
+  long max_file_size = DEFAULT_ROLLING_LOG_SIZE;
+  std::string tmp = properties.GetProperty("maxFileSize");
+  if (!tmp.empty()) {
+    max_file_size = std::atoi(tmp.c_str());
+    if (max_file_size != 0) {
+      const auto len = tmp.length();
+      if (len > 2 && tmp.compare(len - 2, 2, "MB") == 0)
+        max_file_size *= (1024 * 1024); // convert to megabytes
+      else if (len > 2 && tmp.compare(len - 2, 2, "KB") == 0)
+        max_file_size *= 1024; // convert to kilobytes
+    }
+  }
+  capacity_ = max_file_size;
+  Init();
+}
+
 
 Appender::Result CapacityRollingFileAppender::DoAppend(const char *data, int len) {
   if (ShouldRollOver()) RollOver();
@@ -137,6 +177,33 @@ CycleRollingFileAppender::CycleRollingFileAppender(const std::string &name, cons
                                                    CycleRollingFileAppender::RollingCycle cycle, int max_backup,
                                                    std::ios_base::openmode mode, bool create_dirs)
     : RollingFileAppender(name, filename, max_backup, mode, create_dirs), cycle_(cycle) {
+  Init();
+}
+
+CycleRollingFileAppender::CycleRollingFileAppender(const Properties &properties, std::ios_base::openmode mode)
+    : RollingFileAppender(properties, mode) {
+
+  int max_backup;
+  if (!properties.GetInt(max_backup, "maxBackup")) max_backup_ = 10;
+  std::string cycle = properties.GetProperty("cycle", "DAILY");
+
+  if (cycle == "MONTHLY")
+    cycle_ = MONTHLY;
+  else if (cycle == "WEEKLY")
+    cycle_ = WEEKLY;
+  else if (cycle == "DAILY")
+    cycle_ = DAILY;
+  else if (cycle == "TWICE_DAILY")
+    cycle_ = TWICE_DAILY;
+  else if (cycle == "HOURLY")
+    cycle_ = HOURLY;
+  else if (cycle == "MINUTELY")
+    cycle_ = MINUTELY;
+  else {
+    LogGuard::Instance()->Error("CycleRollingFileAppender::ctor() - Cycle not valid: " + cycle);
+    cycle_ = DAILY;
+  }
+
   Init();
 }
 

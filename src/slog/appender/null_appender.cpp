@@ -8,6 +8,8 @@ namespace slog {
 
 NullAppender::NullAppender(const std::string &name) : Appender(name) {}
 
+NullAppender::NullAppender(const Properties &prop) : Appender(prop) {}
+
 Appender::Result NullAppender::DoAppend(const char *data, int len) {
   return Result(true, data, len, len, std::string());
 }

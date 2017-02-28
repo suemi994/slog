@@ -57,7 +57,7 @@ set(SOURCE_FILES
         src/slog/logging/log_guard.cpp
         src/slog/appender/file_appender.cpp
         src/slog/format/layout.cpp
-        src/slog/format/simple_layout.cpp src/slog/format/pattern_layout.cpp include/slog/utils/count_down_latch.h src/slog/utils/count_down_latch.cpp src/slog/logging/log_macros.cpp src/slog/logging/log_level.cpp.cpp src/slog/base/configurator.cpp include/slog/base/object_factory.h include/slog/appender/appender_factory.h include/slog/format/layout_factory.h include/slog/filter/filter_factory.h src/slog/format/layout_factory.cpp src/slog/filter/filter_factory.cpp)
+        src/slog/format/simple_layout.cpp src/slog/format/pattern_layout.cpp include/slog/utils/count_down_latch.h src/slog/utils/count_down_latch.cpp src/slog/logging/log_macros.cpp src/slog/logging/log_level.cpp src/slog/base/configurator.cpp include/slog/base/object_factory.h include/slog/appender/appender_factory.h include/slog/format/layout_factory.h include/slog/filter/filter_factory.h src/slog/format/layout_factory.cpp src/slog/filter/filter_factory.cpp src/slog/appender/appender_factory.cpp include/slog/appender/all.h)
 
 set(TEST_FILES
         src/slog/utils/formatter.cpp

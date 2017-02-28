@@ -16,6 +16,8 @@ public:
 
   CustomAppender(const std::string& name);
 
+  CustomAppender(const Properties &prop);
+
   virtual ~CustomAppender() override;
 
   CustomFunc& func() const;

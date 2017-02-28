@@ -14,6 +14,8 @@ namespace slog {
 
 class ErrorHandler;
 
+class Properties;
+
 class Appender : public NoCopyable {
 public:
 
@@ -29,6 +31,8 @@ public:
   };
 
   Appender(const std::string& name);
+
+  Appender(const Properties &prop);
 
   virtual ~Appender();
 

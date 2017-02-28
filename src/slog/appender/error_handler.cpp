@@ -20,18 +20,21 @@ void AbortHandler::Handle(const Appender::Result &result) {
 
 void AbortHandler::Reset() {}
 
+RetryHandler::RetryHandler(int retry_times) : RetryHandler(retry_times, nullptr) {}
+
 RetryHandler::RetryHandler(int retry_times, std::shared_ptr<Appender> appender) : retry_times_(retry_times),
-                                                                                  fail_times_(0), owner_(appender.get()) {
+                                                                                  fail_times_(0), owner_(
+        appender ? appender.get() : nullptr) {
 
 }
 
 void RetryHandler::Handle(const Appender::Result &result) {
-  if(result.is_success) {
+  if (result.is_success) {
     Reset();
     return;
   }
-  if(++fail_times_<=retry_times_ && owner_)
-    owner_->Append(result.data+result.written,result.len-result.written);
+  if (++fail_times_ <= retry_times_ && owner_)
+    owner_->Append(result.data + result.written, result.len - result.written);
 }
 
 void RetryHandler::Reset() {

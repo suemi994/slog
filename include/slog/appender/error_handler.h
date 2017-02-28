@@ -42,6 +42,8 @@ public:
 class RetryHandler : public ErrorHandler {
 public:
 
+  RetryHandler(int retry_times = 1);
+
   RetryHandler(int retry_times,std::shared_ptr<Appender> appender);
 
   virtual void Handle(const Appender::Result &result) override;

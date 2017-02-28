@@ -8,6 +8,8 @@ namespace slog {
 
 CustomAppender::CustomAppender(const std::string &name) : Appender(name) {}
 
+CustomAppender::CustomAppender(const Properties &prop) : Appender(prop) {}
+
 CustomAppender::~CustomAppender() {
   if(!IsClosed()){
     Close();

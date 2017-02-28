@@ -3,10 +3,10 @@
 */
 
 #include "slog/appender/appender.h"
-#include "slog/base/fixed_buffer.h"
 #include "slog/appender/console_appender.h"
 #include "slog/appender/error_handler.h"
 #include "slog/logging/log_guard.h"
+#include "slog/utils/properties.h"
 
 namespace slog {
 
@@ -16,6 +16,10 @@ Appender::Result::Result(bool success, const char *start, int length, int write_
     success), data(start), len(length), written(write_size), message(msg) {}
 
 Appender::Appender(const std::string &name) : name_(name),is_closed_(false) {}
+
+Appender::Appender(const Properties &prop) {
+  name_ = prop.GetProperty("name");
+}
 
 Appender::~Appender() {
   if(!is_closed_)
