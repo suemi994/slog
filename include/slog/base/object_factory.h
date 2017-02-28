@@ -10,6 +10,8 @@
 #include <functional>
 #include <memory>
 
+#include "slog/logging/log_guard.h"
+
 namespace slog {
 
 template<class T,typename... Args>
@@ -29,7 +31,8 @@ public:
   static Ptr CreateInstance(const std::string& clazz, const Args&... args){
     self* ptr = Impl();
     auto it = ptr->constructors_.find(clazz);
-    if(it==ptr->constructors_.end()) return nullptr;
+    if(it==ptr->constructors_.end())
+      LogGuard::Instance()->Error("Class Not Found: "+clazz+", Please config a valid type!", true);
     return it->second(args...);
   }
 

@@ -124,15 +124,7 @@ std::vector<std::string> PropertyConfigurator::LoggerNames(const Properties& pro
 }
 
 std::unordered_map<std::string, std::string> PropertyConfigurator::AppenderNames(const Properties &prop) const {
-  std::unordered_map<std::string, std::string> res;
-
-  auto & tmp = prop.GetRawValues();
-  std::for_each(tmp.begin(),tmp.end(),[&res](auto & pair){
-    if(pair.first.find('.')==std::string::npos)
-      res[pair.first] = pair.second;
-  });
-
-  return res;
+  return prop.PropertyWithoutSuffix();
 }
 
 

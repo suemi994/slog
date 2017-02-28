@@ -6,6 +6,7 @@
 #include "slog/filter/filter.h"
 #include "slog/logging/log_event.h"
 #include "slog/utils/properties.h"
+#include "slog/filter/filter_factory.h"
 
 namespace slog {
 
@@ -17,6 +18,15 @@ bool Filter::Equals(const Filter &filter) const {
 
 CompositeFilter::CompositeFilter(const FilterList &filters) : filters_(filters) {
   for (auto &ptr:filters) assert(ptr != nullptr);
+}
+
+CompositeFilter::CompositeFilter(const Properties &prop) {
+  auto children = prop.PropertyWithoutSuffix();
+  for (auto &child:children) {
+    auto ptr = FilterFactory::CreateInstance(child.second, prop.GetPropertySubset(child.first + "."));
+    assert(ptr);
+    filters_.push_back(std::move(ptr));
+  }
 }
 
 void CompositeFilter::Append(FilterPtr filter) {
@@ -38,6 +48,8 @@ void CompositeFilter::Clear() {
 
 AndFilter::AndFilter(const FilterList &filters) : CompositeFilter(filters) {}
 
+AndFilter::AndFilter(const Properties &prop) : CompositeFilter(prop) {}
+
 Filter::Result AndFilter::Decide(LogEvent &log_event) const {
   for (auto &f:filters_)
     if (f->Decide(log_event) == Result::DENY)
@@ -53,6 +65,8 @@ bool AndFilter::Equals(const Filter &filter) const {
 
 
 OrFilter::OrFilter(const FilterList &filters) : CompositeFilter(filters) {}
+
+OrFilter::OrFilter(const Properties &prop) : CompositeFilter(prop) {}
 
 Filter::Result OrFilter::Decide(LogEvent &log_event) const {
   for (auto &f:filters_)
@@ -71,7 +85,19 @@ BinaryFilter::BinaryFilter(FilterPtr left, FilterPtr right) : left_(left), right
   assert(left != nullptr && right != nullptr);
 }
 
+BinaryFilter::BinaryFilter(const Properties &prop) {
+  auto children = prop.PropertyWithoutSuffix();
+  assert(children.size() == 2);
+  auto it = children.begin();
+  left_ = FilterFactory::CreateInstance(it->second, prop.GetPropertySubset(it->first + "."));
+  assert(left_);
+  ++it;
+  right_ = FilterFactory::CreateInstance(it->second, prop.GetPropertySubset(it->first + "."));
+}
+
 BinaryAndFilter::BinaryAndFilter(FilterPtr left, FilterPtr right) : BinaryFilter(left, right) {}
+
+BinaryAndFilter::BinaryAndFilter(const Properties &prop) : BinaryFilter(prop) {}
 
 Filter::Result BinaryAndFilter::Decide(LogEvent &log_event) const {
   return left_->Decide(log_event) == Result::ACCEPT && right_->Decide(log_event) == Result::ACCEPT ? Result::ACCEPT
@@ -86,6 +112,8 @@ bool BinaryAndFilter::Equals(const Filter &filter) const {
 
 BinaryOrFilter::BinaryOrFilter(FilterPtr left, FilterPtr right) : BinaryFilter(left, right) {}
 
+BinaryOrFilter::BinaryOrFilter(const Properties &prop) : BinaryFilter(prop) {}
+
 Filter::Result BinaryOrFilter::Decide(LogEvent &log_event) const {
   return left_->Decide(log_event) == Result::ACCEPT || right_->Decide(log_event) == Result::ACCEPT ? Result::ACCEPT
                                                                                                    : Result::DENY;
@@ -99,6 +127,13 @@ bool BinaryOrFilter::Equals(const Filter &filter) const {
 
 NotFilter::NotFilter(FilterPtr base) : base_(base) {
   assert(base != nullptr);
+}
+
+NotFilter::NotFilter(const Properties &prop) {
+  auto children = prop.PropertyWithoutSuffix();
+  assert(children.size() == 1);
+  auto it = children.begin();
+  base_ = FilterFactory::CreateInstance(it->second, prop.GetPropertySubset(it->first + "."));
 }
 
 Filter::Result NotFilter::Decide(LogEvent &log_event) const {
@@ -139,7 +174,7 @@ LogLevelMatchFilter::LogLevelMatchFilter(const Properties &properties) {
   auto str = properties.GetProperty("LogLevelToMatch");
   try {
     match_level_ = slog::FromString(str);
-  } catch(...){
+  } catch (...) {
     match_level_ = LogLevel::INFO;
   }
 }
@@ -166,13 +201,13 @@ LogLevelRangeFilter::LogLevelRangeFilter(const Properties &properties) {
 
   try {
     min_level_ = slog::FromString(min_str);
-  }catch(...){
+  } catch (...) {
     min_level_ = LogLevel::TRACE;
   }
 
   try {
     max_level_ = slog::FromString(max_str);
-  }catch(...){
+  } catch (...) {
     max_level_ = LogLevel::ERROR;
   }
 }

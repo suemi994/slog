@@ -97,9 +97,9 @@ TEST(PROPERTIES_TEST,GET_BY_TYPE){
 TEST(PROPERTIES_TEST,INITIALIZE) {
 
   Properties prop("/Users/suemi/Workspace/slog/test/slog/resources/slog.properties");
-  EXPECT_EQ("/home/suemi/logs/",prop.GetProperty("slog.log.dir"));
   int flush_interval;
-  prop.GetInt(flush_interval,"slog.flush.interval");
+  prop.GetInt(flush_interval,"slog.scheduler.flushInterval");
+  EXPECT_EQ(3,flush_interval);
 }
 
 

@@ -44,6 +44,8 @@ public:
 
   CompositeFilter(const FilterList &filters);
 
+  CompositeFilter(const Properties& prop);
+
   void Append(FilterPtr filter);
 
   void Remove(FilterPtr filter);
@@ -72,6 +74,8 @@ class AndFilter : public CompositeFilter {
 public:
   AndFilter() = default;
 
+  AndFilter(const Properties& prop);
+
   AndFilter(const FilterList &filters);
 
   virtual Result Decide(LogEvent &log_event) const override;
@@ -98,6 +102,8 @@ public:
 
   OrFilter(const FilterList &filters);
 
+  OrFilter(const Properties& prop);
+
   virtual Result Decide(LogEvent &log_event) const override;
 
   virtual bool Equals(const Filter &filter) const override;
@@ -121,6 +127,8 @@ class BinaryFilter : public Filter {
 public:
   BinaryFilter(FilterPtr left, FilterPtr right);
 
+  BinaryFilter(const Properties& prop);
+
 protected:
   FilterPtr left_;
   FilterPtr right_;
@@ -129,6 +137,8 @@ protected:
 class BinaryAndFilter : public BinaryFilter {
 public:
   BinaryAndFilter(FilterPtr left, FilterPtr right);
+
+  BinaryAndFilter(const Properties& prop);
 
   virtual Result Decide(LogEvent &log_event) const override;
 
@@ -154,6 +164,8 @@ class BinaryOrFilter : public BinaryFilter {
 public:
   BinaryOrFilter(FilterPtr left, FilterPtr right);
 
+  BinaryOrFilter(const Properties& prop);
+
   virtual Result Decide(LogEvent &log_event) const override;
 
   virtual bool Equals(const Filter &filter) const override;
@@ -177,6 +189,8 @@ inline bool operator!=(const BinaryOrFilter &lhs, const BinaryOrFilter &rhs) {
 class NotFilter : public Filter {
 public:
   NotFilter(FilterPtr base);
+
+  NotFilter(const Properties& prop);
 
   virtual Result Decide(LogEvent &log_event) const override;
 

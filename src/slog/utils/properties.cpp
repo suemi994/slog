@@ -161,6 +161,27 @@ std::vector<std::string> Properties::PropertyNames() const {
   return keys;
 }
 
+Properties::StringMap Properties::PropertyWithoutSuffix() const {
+  StringMap res;
+  std::for_each(values_.begin(),values_.end(),[&res](auto & pair){
+    if(pair.first.find('.')==std::string::npos)
+      res[pair.first] = pair.second;
+  });
+  return res;
+}
+
+std::vector<std::string> Properties::PartOfPropertyNames(unsigned int i, char sep) const {
+  std::vector<std::string> res;
+
+  std::for_each(values_.begin(),values_.end(),[&res](auto & pair){
+    auto tmp = StringUtil::Split(pair.first,sep);
+    if(tmp.size()>i) res.push_back(tmp[i]);
+  });
+  std::sort(res.begin(),res.end());
+  res.erase(std::unique(res.begin(),res.end()),res.end());
+  return res;
+}
+
 void Properties::SetProperty(const std::string &key, const std::string &value) {
   values_[key] = value;
 }

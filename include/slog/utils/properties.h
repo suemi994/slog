@@ -42,6 +42,10 @@ public:
 
   std::vector<std::string> PropertyNames() const;
 
+  StringMap PropertyWithoutSuffix() const;
+
+  std::vector<std::string> PartOfPropertyNames(unsigned int i, char sep = '.') const;
+
   void SetProperty(const std::string &key, const std::string &value);
 
   void RemoveProperty(const std::string &key);
