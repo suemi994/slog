@@ -16,7 +16,6 @@ namespace slog {
  * @author suemi
  */
 class TimeUtil {
-  using namespace std::chrono;
   using time_point = std::chrono::system_clock::time_point;
 public:
   static time_point Now();
