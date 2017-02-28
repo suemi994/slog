@@ -112,8 +112,13 @@ void StringUtil::Tokenize(const std::string &str, char ch, OutputIterator out, b
     if(*last==ch){
       *out++ = std::string(first,last);
       if(collapse)
-        for(;last+1!=str.end() && *last==ch;++last);
-      first = last+1;
+        for (; last != str.end() && *last == ch; ++last);
+
+      if (last == str.end()) {
+        first = last;
+        break;
+      } else
+        first = *last == ch ? last + 1 : last;
     }
   }
   if(first!=last) *out = std::string(first,last);
@@ -122,7 +127,7 @@ void StringUtil::Tokenize(const std::string &str, char ch, OutputIterator out, b
 std::vector<std::string> StringUtil::Split(const std::string &str, char sep) {
   std::vector<std::string> res;
   for(auto it=str.begin();it!=str.end();){
-    auto tmp = std::find_if(it,str.end(),[](char ch){
+    auto tmp = std::find_if(it, str.end(), [sep](char ch) {
       return ch==sep;
     });
     res.push_back(std::string(it,tmp));
@@ -133,11 +138,11 @@ std::vector<std::string> StringUtil::Split(const std::string &str, char sep) {
 }
 
 void StringUtil::LTrim(std::string &str) {
-  str.erase(str.begin(),std::find_if_not(str.begin(),str.end(),std::ptr_fun(std::isspace)));
+  str.erase(str.begin(), std::find_if_not(str.begin(), str.end(), std::ptr_fun<int, int>(std::isspace)));
 }
 
 void StringUtil::RTrim(std::string &str) {
-  str.erase(std::find_if_not(str.rbegin(),str.rend(),std::ptr_fun(std::isspace)).base(),str.end());
+  str.erase(std::find_if_not(str.rbegin(), str.rend(), std::ptr_fun<int, int>(std::isspace)).base(), str.end());
 }
 
 void StringUtil::Trim(std::string &str) {
