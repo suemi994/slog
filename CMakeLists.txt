@@ -79,6 +79,9 @@ set(TEST_FILES
 
         src/slog/utils/string_util.cpp
         test/slog/utils/test_string_util.cpp
+
+        src/slog/utils/properties.cpp
+        test/slog/utils/test_properties.cpp
         )
 
 SET(TMP_FILES

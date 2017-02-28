@@ -173,7 +173,7 @@ Properties::StringMap Properties::PropertyWithoutSuffix() const {
 std::vector<std::string> Properties::PartOfPropertyNames(unsigned int i, char sep) const {
   std::vector<std::string> res;
 
-  std::for_each(values_.begin(),values_.end(),[&res](auto & pair){
+  std::for_each(values_.begin(), values_.end(), [&](auto &pair) {
     auto tmp = StringUtil::Split(pair.first,sep);
     if(tmp.size()>i) res.push_back(tmp[i]);
   });
@@ -193,7 +193,7 @@ void Properties::RemoveProperty(const std::string &key) {
 Properties Properties::GetPropertySubset(const std::string &prefix) const {
   Properties res;
   const auto prefix_len = prefix.size();
-  std::for_each(values_.cbegin(), values_.cend(), [&res](auto & pair) {
+  std::for_each(values_.cbegin(), values_.cend(), [&](auto &pair) {
     if (!pair.first.compare(0, prefix_len, prefix)) {
       res.SetProperty(pair.first.substr(prefix_len), pair.second);
     }
@@ -220,7 +220,7 @@ bool Properties::GetFloat(float &val, const std::string &key) const {
   return GetValue<float>(val, key);
 }
 
-Properties::StringMap &Properties::GetRawValues() const {
+Properties::StringMap Properties::GetRawValues() const {
   return values_;
 }
 

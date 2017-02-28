@@ -5,16 +5,26 @@
 #include <gmock/gmock.h>
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "slog/utils/properties.h"
 
 using namespace slog;
+using namespace std;
 
 TEST(PROPERTIES_TEST,EXISTS){
   Properties prop;
   EXPECT_EQ(false,prop.Exists("key"));
   prop.SetProperty("key","value");
   EXPECT_EQ(true,prop.Exists("key"));
+}
+
+TEST(PROPERTIES_TEST, PREFIX_EXIST) {
+  Properties prop;
+  prop.SetProperty("a.b.c", "d.d.e");
+
+  EXPECT_TRUE(prop.ExistPrefix("a.b"));
+  EXPECT_FALSE(prop.ExistPrefix("b.e"));
 }
 
 TEST(PROPERTIES_TEST,SIZE){
@@ -39,6 +49,29 @@ TEST(PROPERTIES_TEST,PROPERTIE_NAMES){
   EXPECT_THAT(std::vector<std::string>({"c","a"}),::testing::ContainerEq(prop.PropertyNames()));
 }
 
+TEST(PROPERTIES_TEST, PROPPERTY_WITHOUT_SUFFIX) {
+  Properties prop;
+  prop.SetProperty("a", "b");
+  prop.SetProperty("a.b", "c");
+  prop.SetProperty("a.c", "d");
+  prop.SetProperty("b", "e");
+
+  auto tmp = prop.PropertyWithoutSuffix();
+
+  EXPECT_TRUE(tmp.find("a") != tmp.end());
+  EXPECT_TRUE(tmp.find("a.b") == tmp.end());
+}
+
+TEST(PROPERTY_TEST, PART_OF_PROPERTY_NAMES) {
+  Properties prop;
+  prop.SetProperty("a.b", "w");
+  prop.SetProperty("a.b.c", "q");
+  prop.SetProperty("a.c.d", "r");
+
+  EXPECT_THAT(prop.PartOfPropertyNames(1), ::testing::ContainerEq(vector<string>({"b", "c"})));
+  EXPECT_THAT(prop.PartOfPropertyNames(3), ::testing::ContainerEq(vector<string>()));
+}
+
 TEST(PROPERTIES_TEST,SET_PROPERTY){
   Properties prop;
   prop.SetProperty("key","value");
@@ -60,8 +93,8 @@ TEST(PROPERTIES_TEST,GET_SUBSET){
   prop.SetProperty("a_1","b_1");
   prop.SetProperty("c_1","d_1");
   Properties subset = prop.GetPropertySubset("a_");
-  EXPECT_EQ("b_1",subset.GetProperty("a_1"));
-  EXPECT_EQ(false,subset.Exists("c_1"));
+  EXPECT_EQ("b_1", subset.GetProperty("1"));
+  EXPECT_EQ(1, subset.Size());
 }
 
 TEST(PROPERTIES_TEST,GET_BY_TYPE){

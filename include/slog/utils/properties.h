@@ -60,7 +60,7 @@ public:
 
   bool GetFloat(float &val, const std::string &key) const;
 
-  StringMap& GetRawValues() const;
+  StringMap GetRawValues() const;
 
   static const char PROPERTIES_COMMENT_CHAR;
 
