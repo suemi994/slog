@@ -20,8 +20,8 @@ LogLevel FromString(const std::string& level){
   };
   std::string tmp;
   tmp.resize(level.length());
-  std::transform(level.begin(),level.end(),tmp.begin(),[](auto it){
-    return std::toupper(*it);
+  std::transform(level.begin(), level.end(), tmp.begin(), [](char ch) {
+    return std::toupper(ch);
   });
 
   auto it = hash_table.find(tmp);

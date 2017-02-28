@@ -71,7 +71,7 @@ set(SOURCE_FILES
         src/slog/format/layout_factory.cpp
         src/slog/filter/filter_factory.cpp
         src/slog/appender/appender_factory.cpp
-        include/slog/appender/all.h test/slog/utils/test_string_util.cpp test/slog/utils/test_file_util.cpp test/slog/utils/time_util_main.cpp test/slog/logging/logging_guard_main.cpp)
+        include/slog/appender/all.h test/slog/utils/test_string_util.cpp test/slog/utils/test_file_util.cpp test/slog/utils/time_util_main.cpp test/slog/logging/logging_guard_main.cpp test/slog/format/test_layout.cpp test/slog/logging/test_log_level.cpp)
 
 set(TEST_FILES
         src/slog/utils/formatter.cpp
@@ -82,6 +82,9 @@ set(TEST_FILES
 
         src/slog/utils/properties.cpp
         test/slog/utils/test_properties.cpp
+
+        src/slog/logging/log_level.cpp
+        test/slog/logging/test_log_level.cpp
         )
 
 SET(TMP_FILES
