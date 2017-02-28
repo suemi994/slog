@@ -71,7 +71,7 @@ set(SOURCE_FILES
         src/slog/format/layout_factory.cpp
         src/slog/filter/filter_factory.cpp
         src/slog/appender/appender_factory.cpp
-        include/slog/appender/all.h test/slog/utils/test_string_util.cpp test/slog/utils/test_file_util.cpp test/slog/utils/time_util_main.cpp)
+        include/slog/appender/all.h test/slog/utils/test_string_util.cpp test/slog/utils/test_file_util.cpp test/slog/utils/time_util_main.cpp test/slog/logging/logging_guard_main.cpp)
 
 set(TEST_FILES
         src/slog/utils/formatter.cpp
@@ -82,7 +82,7 @@ set(TEST_FILES
         )
 
 SET(TMP_FILES
-        src/slog/utils/time_util.cpp
+        src/slog/logging/log_guard.cpp
         main.cpp
         )
 add_executable(tmp_main ${TMP_FILES})

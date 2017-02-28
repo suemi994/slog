@@ -16,7 +16,7 @@ LogGuard *volatile LogGuard::instance_ = nullptr;
 std::mutex LogGuard::mutex_;
 
 LogGuard *LogGuard::Instance() {
-  if (!instance_) return instance_;
+  if (instance_) return instance_;
   LogGuard *ptr = new LogGuard();
   bool success = true;
   {
@@ -72,8 +72,10 @@ LogGuard::~LogGuard() {
 }
 
 void LogGuard::DoLog(const char *prefix, const char *msg, bool throw_flag) const {
-  if (enable_internal_logging_)
-    std::cout << prefix << msg << std::endl;
+  if (enable_internal_logging_) {
+    auto str = std::string(prefix) + std::string(msg) + '\n';
+    std::cout << str;
+  }
   if (throw_flag)
     throw std::runtime_error(msg);
 }
