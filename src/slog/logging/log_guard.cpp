@@ -74,7 +74,7 @@ LogGuard::~LogGuard() {
 void LogGuard::DoLog(const char *prefix, const char *msg, bool throw_flag) const {
   if (enable_internal_logging_) {
     auto str = std::string(prefix) + std::string(msg) + '\n';
-    std::cout << str;
+    std::cout << str << std::flush;
   }
   if (throw_flag)
     throw std::runtime_error(msg);

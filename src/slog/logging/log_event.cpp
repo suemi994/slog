@@ -6,7 +6,6 @@
 
 #include "slog/logging/log_event.h"
 #include "slog/logging/logger.h"
-#include "slog/utils/formatter.h"
 
 namespace slog {
 
@@ -15,10 +14,10 @@ namespace detail {
 const char digits[] = "9876543210123456789";
 const char *zero = digits + 9;
 
-static_assert(sizeof(digits) == 20);
+static_assert(sizeof(digits) == 20, "digits size err!");
 
 const char digitsHex[] = "0123456789ABCDEF";
-static_assert(sizeof(digitsHex) == 17);
+static_assert(sizeof(digitsHex) == 17, "hex digits err!");
 
 template<typename T>
 size_t Convert(char buf[], T val) {
@@ -57,7 +56,7 @@ size_t ConvertAsHex(char buf[], uintptr_t val) {
   return p - buf;
 }
 }
-
+/*
 LogEvent::LogEvent(LogLevel level, std::shared_ptr<Logger> logger, LogEvent::Time time) :
     level_(level), logger_(logger), time_(time) {
 }
@@ -66,15 +65,20 @@ LogEvent::LogEvent(LogLevel level, std::shared_ptr<Logger> logger) : LogEvent(le
                                                                               std::chrono::system_clock::now()) {
 
 }
+ */
 
-LogEvent::LogEvent(LogLevel level) : LogEvent(level, nullptr) {
+//LogEvent::LogEvent(LogLevel level) : LogEvent(level, nullptr) {
+//
+//}
+
+LogEvent::LogEvent(LogLevel level) : level_(level) {
 
 }
 
 LogEvent::~LogEvent() {
-  if (auto logger_ptr = logger_.lock()) {
-    logger_ptr->Submit(*this);
-  }
+//  if (auto logger_ptr = logger_.lock()) {
+//    logger_ptr->Submit(*this);
+//  }
 }
 
 LogEvent::self &LogEvent::operator<<(bool val) {
@@ -149,6 +153,7 @@ LogEvent::self &LogEvent::operator<<(double val) {
     auto written = snprintf(buffer_.current(), max_numeric_size, "%.12g", val);
     buffer_.Forward(written);
   }
+  return *this;
 }
 
 LogEvent::self &LogEvent::operator<<(const char *val) {
@@ -156,10 +161,11 @@ LogEvent::self &LogEvent::operator<<(const char *val) {
     buffer_.Append(val, std::strlen(val));
   else
     buffer_.Append("(null)", 6);
+  return *this;
 }
 
 LogEvent::self &LogEvent::operator<<(const unsigned char *str) {
-  *this << static_cast<const char *>(str);
+  *this << reinterpret_cast<const char *>(str);
   return *this;
 }
 
@@ -174,6 +180,7 @@ LogEvent::Locate(const std::string &file, const std::string &method, const std::
   location_.method = method;
   location_.line = line;
   location_.thread_id = tid;
+  return *this;
 }
 
 LogEvent::self &LogEvent::operator<<(const LogEvent::Buffer &v) {
@@ -185,7 +192,11 @@ void LogEvent::Append(const char *data, int len) {
   buffer_.Append(data, len);
 }
 
-LogEvent::Buffer &LogEvent::buffer() const {
+LogEvent::Buffer &LogEvent::buffer() {
+  return buffer_;
+}
+
+const LogEvent::Buffer &LogEvent::buffer() const {
   return buffer_;
 }
 
@@ -197,7 +208,11 @@ LogLevel LogEvent::log_level() const {
   return level_;
 }
 
-Location &LogEvent::location() const {
+Location &LogEvent::location() {
+  return location_;
+}
+
+const Location &LogEvent::location() const {
   return location_;
 }
 
@@ -205,9 +220,11 @@ std::string LogEvent::message() const {
   return buffer_.ToString();
 }
 
+/*
 std::shared_ptr<Logger> LogEvent::logger() const {
   return logger_.lock();
 }
+*/
 
 const LogEvent::Time &LogEvent::time() const {
   return time_;
@@ -218,10 +235,10 @@ LogEvent &LogEvent::operator<<(const LogEvent &log) {
 }
 
 void LogEvent::StaticCheck() {
-  static_assert(max_numeric_size - 10 > std::numeric_limits<double>::digits10);
-  static_assert(max_numeric_size - 10 > std::numeric_limits<long double>::digits10);
-  static_assert(max_numeric_size - 10 > std::numeric_limits<long>::digits10);
-  static_assert(max_numeric_size - 10 > std::numeric_limits<long long>::digits10);
+  static_assert(max_numeric_size - 10 > std::numeric_limits<double>::digits10, "numeric limits exceed");
+  static_assert(max_numeric_size - 10 > std::numeric_limits<long double>::digits10, "numeric limits exceed");
+  static_assert(max_numeric_size - 10 > std::numeric_limits<long>::digits10, "numeric limits exceed");
+  static_assert(max_numeric_size - 10 > std::numeric_limits<long long>::digits10, "numeric limits exceed");
 }
 
 template<typename T>

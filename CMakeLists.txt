@@ -85,6 +85,16 @@ set(TEST_FILES
 
         src/slog/logging/log_level.cpp
         test/slog/logging/test_log_level.cpp
+
+        src/slog/base/fixed_buffer.cpp
+        src/slog/logging/log_guard.cpp
+
+        src/slog/logging/log_event.cpp
+        test/slog/logging/test_log_event.cpp
+
+        src/slog/utils/file_util.cpp
+        test/slog/utils/test_file_util.cpp
+
         )
 
 SET(TMP_FILES

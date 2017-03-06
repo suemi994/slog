@@ -12,12 +12,12 @@
 #include "slog/logging/log_level.h"
 #include "slog/utils/no_copyable.h"
 #include "slog/base/fixed_buffer.h"
+#include "slog/utils/formatter.h"
 
 namespace slog {
 
-class Logger;
+// class Logger;
 
-class Formatter;
 
 
 /*
@@ -40,9 +40,9 @@ class LogEvent : public NoCopyable {
 public:
   using Buffer = FixedBuffer<detail::SMALL_BUFFER_SIZE>;
 
-  LogEvent(LogLevel level, std::shared_ptr<Logger> logger,Time time);
+  // LogEvent(LogLevel level, std::shared_ptr<Logger> logger,Time time);
 
-  LogEvent(LogLevel level,std::shared_ptr<Logger> logger);
+  // LogEvent(LogLevel level,std::shared_ptr<Logger> logger);
 
   LogEvent(LogLevel level);
 
@@ -86,17 +86,21 @@ public:
 
   void Append(const char *data, int len);
 
-  Buffer &buffer() const;
+  Buffer &buffer();
+
+  const Buffer &buffer() const;
 
   void Reset();
 
   LogLevel log_level() const;
 
-  Location& location() const;
+  Location &location();
+
+  const Location &location() const;
 
   std::string message() const;
 
-  std::shared_ptr<Logger> logger() const;
+  // std::shared_ptr<Logger> logger() const;
 
   const Time& time() const;
 
@@ -119,7 +123,7 @@ private:
   LogLevel level_;
   Time time_;
   Location location_;
-  std::weak_ptr<Logger> logger_;
+  //std::weak_ptr<Logger> logger_;
 };
 
 LogEvent &operator<<(LogEvent &log, const Formatter &formatter);
