@@ -25,21 +25,6 @@ class LogScheduler;
 
 class Configurator {
 public:
-  Configurator(const std::string& file_path);
-
-  virtual void Configure() = 0;
-
-  virtual LoggerMap& loggers() = 0;
-
-  virtual AppenderMap& appenders() = 0;
-
-  virtual SchedulerPtr scheduler() = 0;
-
-  virtual LoggerPtr root_logger() = 0;
-
-  virtual void Reset() = 0;
-
-protected:
   using LoggerPtr = std::shared_ptr<Logger>;
   using FilterPtr = std::shared_ptr<Filter>;
   using AppenderPtr = std::shared_ptr<Appender>;
@@ -50,6 +35,21 @@ protected:
   using AppenderMap = std::unordered_map<std::string,AppenderPtr>;
 
   std::string config_file_;
+public:
+  Configurator(const std::string &file_path);
+
+  virtual void Configure() = 0;
+
+  virtual LoggerMap &loggers() = 0;
+
+  virtual AppenderMap &appenders() = 0;
+
+  virtual SchedulerPtr scheduler() = 0;
+
+  virtual LoggerPtr root_logger() = 0;
+
+  virtual void Reset() = 0;
+
 
 };
 

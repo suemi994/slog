@@ -15,6 +15,7 @@ namespace slog {
 class Properties;
 
 class FileAppender : public Appender {
+protected:
   using Time = std::chrono::system_clock::time_point;
 public:
   FileAppender(const std::string &name,

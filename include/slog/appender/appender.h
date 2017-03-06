@@ -46,7 +46,7 @@ public:
   bool IsClosed() const;
 
   template<int SIZE>
-  virtual void Append(const FixedBuffer<SIZE>& buffer);
+  void Append(const FixedBuffer<SIZE> &buffer);
 
   virtual void Append(const char *data, size_t len);
 
@@ -54,9 +54,9 @@ public:
 
   virtual bool is_immediate() const = 0;
 
-  std::unique_ptr<ErrorHandler>& error_handler() const ;
+  const std::unique_ptr<ErrorHandler> &error_handler() const;
 
-  void set_error_handler(const std::unique_ptr<ErrorHandler>& handler);
+  void set_error_handler(std::unique_ptr<ErrorHandler> &handler);
 
 protected:
 

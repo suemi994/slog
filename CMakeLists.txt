@@ -7,7 +7,6 @@ include_directories(src)
 include_directories(include)
 
 set(SOURCE_FILES
-        main.cpp
         include/slog/logging/logger.h
         include/slog/utils/no_copyable.h
         include/slog/logging/logger_factory.h
@@ -31,14 +30,11 @@ set(SOURCE_FILES
         include/slog/logging/log_macros.h
         src/slog/base/fixed_buffer.cpp
         src/slog/utils/formatter.cpp
-        test/slog/utils/test_formatter.cpp
         src/slog/utils/properties.cpp
-        test/slog/utils/test_properties.cpp
         src/slog/logging/logger.cpp
         src/slog/logging/log_event.cpp
         include/slog/utils/time_util.h
-        test/slog/logging/test_log_event.cpp
-        src/slog/logging/logger_factory.cpp
+        # src/slog/logging/logger_factory.cpp
         src/slog/logging/log_scheduler.cpp
         src/slog/appender/error_handler.cpp
         src/slog/filter/filter.cpp
@@ -61,7 +57,7 @@ set(SOURCE_FILES
         src/slog/format/pattern_layout.cpp
         include/slog/utils/count_down_latch.h
         src/slog/utils/count_down_latch.cpp
-        src/slog/logging/log_macros.cpp
+        #src/slog/logging/log_macros.cpp
         src/slog/logging/log_level.cpp
         src/slog/base/configurator.cpp
         include/slog/base/object_factory.h
@@ -71,11 +67,12 @@ set(SOURCE_FILES
         src/slog/format/layout_factory.cpp
         src/slog/filter/filter_factory.cpp
         src/slog/appender/appender_factory.cpp
-        include/slog/appender/all.h test/slog/utils/test_string_util.cpp test/slog/utils/test_file_util.cpp test/slog/utils/time_util_main.cpp test/slog/logging/logging_guard_main.cpp test/slog/format/test_layout.cpp test/slog/logging/test_log_level.cpp)
-
+        )
 set(TEST_FILES
         src/slog/utils/formatter.cpp
         test/slog/utils/test_formatter.cpp
+
+        src/slog/utils/time_util.cpp
 
         src/slog/utils/string_util.cpp
         test/slog/utils/test_string_util.cpp
@@ -97,7 +94,14 @@ set(TEST_FILES
 
         src/slog/filter/filter.cpp
         src/slog/filter/filter_factory.cpp
+        src/slog/filter/filter_builder.cpp
         test/slog/filter/test_filter.cpp
+
+        src/slog/format/layout.cpp
+        src/slog/format/simple_layout.cpp
+        src/slog/format/pattern_layout.cpp
+        src/slog/format/layout_factory.cpp
+        test/slog/format/test_layout.cpp
         )
 
 SET(TMP_FILES

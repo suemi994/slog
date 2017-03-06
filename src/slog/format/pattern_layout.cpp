@@ -40,16 +40,19 @@ void BasicPatternConverter::Convert(std::ostream &os, LogEvent &log) const {
     case LOG_LEVEL_CONVERTER:
       os << slog::ToString(log.log_level());
       break;
-    case PROCESS_CONVERTER:
-      int pid = getpid();
-      os << StringUtil::ConvertInt(pid);
-      break;
     case MESSAGE_CONVERTER:
       os << log.message();
       break;
     case NEWLINE_CONVERTER:
       os << '\n';
       break;
+    case PROCESS_CONVERTER: {
+      int pid = 0;
+      pid = (int) ::getpid();
+      os << StringUtil::ConvertInt(pid);
+    }
+      break;
+
     default:
       break; // Do Nothing
   }
@@ -59,9 +62,16 @@ LoggerPatternConverter::LoggerPatternConverter(const FormattingInfo &info, int p
                                                                                             precision_(precision) {}
 
 void LoggerPatternConverter::Convert(std::ostream &os, LogEvent &log) const {
+/*
   auto ptr = log.logger();
+
   if (ptr == nullptr) return;
   const std::string name = ptr->name();
+*/
+  // TODO
+
+  const std::string &name = "root";
+
   if (precision_ <= 0) {
     os << name;
     return;
@@ -231,7 +241,7 @@ void PatternParser::FinalizeConverter(char c) {
   switch (c) {
 
     case 'c':
-      pc = new LoggerPatternConverter(fmt_info_, ExtractPrecisionOption());
+      pc = std::make_shared<LoggerPatternConverter>(fmt_info_, ExtractPrecisionOption());
       break;
 
     case 'd':
@@ -270,7 +280,7 @@ void PatternParser::FinalizeConverter(char c) {
           << "] at position " << pos_
           << " in conversion pattern.";
       LogGuard::Instance()->Error(buf.str());
-      pc = new LiteralPatternConverter(current_literal_);
+      pc = std::make_shared<LiteralPatternConverter>(current_literal_);
   }
 
   converters_.push_back(pc);
@@ -284,9 +294,9 @@ PatternLayout::PatternLayout(const std::string &pattern) : pattern_(pattern) {
 }
 
 PatternLayout::PatternLayout(const Properties &properties) : Layout(properties) {
-  if(properties.Exists("Pattern")){
+  if (properties.Exists("Pattern")) {
     pattern_ = properties.GetProperty("Pattern");
-  }else {
+  } else {
     LogGuard::Instance()->Error("ConversionPattern not specified in properties", true);
   }
 }

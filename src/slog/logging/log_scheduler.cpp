@@ -41,7 +41,7 @@ void LogScheduler::Append(const char *buf, size_t len) {
     current_buffer_->Append(buf, len);
     return;
   }
-  buffers_.push_back(current_buffer_.release());
+  buffers_.push_back(std::move(current_buffer_));
 
   // 当前缓冲区已满，使用第一备用缓冲区
   if (next_buffer_)
@@ -54,7 +54,7 @@ void LogScheduler::Append(const char *buf, size_t len) {
 
 void LogScheduler::Flush(BufferPtr &buf) {
   for (auto &appender:delay_appenders_)
-    appender->Append(*buf);
+    appender->Append<detail::LARGE_BUFFER_SIZE>(*buf);
 }
 
 void LogScheduler::Start() {
@@ -134,7 +134,7 @@ void LogScheduler::DaemonFunc() {
         cond_.wait_for(lock, std::chrono::seconds(flush_interval_), [this]() {
           return !buffers_.empty();
         });
-      buffers_.push_back(current_buffer_.release());
+      buffers_.push_back(std::move(current_buffer_));
       current_buffer_ = std::move(backup_1);
       to_write.swap(buffers_);
       if (!next_buffer_)
@@ -165,14 +165,14 @@ void LogScheduler::DaemonFunc() {
 
     if (!backup_1) {
       assert(!to_write.empty());
-      backup_1 = to_write.back();
+      backup_1 = std::move(to_write.back());
       to_write.pop_back();
       backup_1->Reset();
     }
 
     if (!backup_2) {
       assert(!to_write.empty());
-      backup_2 = to_write.back();
+      backup_2 = std::move(to_write.back());
       to_write.pop_back();
       backup_2->Reset();
     }

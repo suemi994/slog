@@ -27,6 +27,7 @@ Appender::~Appender() {
 }
 
 std::shared_ptr<Appender> Appender::DefaultInstance() {
+  return std::make_shared<ConsoleAppender>("console");
 }
 
 void Appender::Close() {
@@ -52,12 +53,16 @@ const std::string &Appender::name() const {
   return name_;
 }
 
-std::unique_ptr<ErrorHandler> &Appender::error_handler() const {
+const std::unique_ptr<ErrorHandler> &Appender::error_handler() const {
   return error_handler_;
 }
 
-void Appender::set_error_handler(const std::unique_ptr<ErrorHandler> &handler) {
+void Appender::set_error_handler(std::unique_ptr<ErrorHandler> &handler) {
   error_handler_ = std::move(handler);
 }
+
+template void Appender::Append<detail::LARGE_BUFFER_SIZE>(const FixedBuffer<detail::LARGE_BUFFER_SIZE> &buffer);
+
+template void Appender::Append<detail::SMALL_BUFFER_SIZE>(const FixedBuffer<detail::SMALL_BUFFER_SIZE> &buffer);
 
 }

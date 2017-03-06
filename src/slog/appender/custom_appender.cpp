@@ -17,7 +17,7 @@ CustomAppender::~CustomAppender() {
   }
 }
 
-CustomAppender::CustomFunc &CustomAppender::func() const {
+const CustomAppender::CustomFunc &CustomAppender::func() const {
   return func_;
 }
 

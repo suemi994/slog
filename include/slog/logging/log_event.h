@@ -24,7 +24,7 @@ namespace slog {
  * 描述日志发生的位置信息
  */
 struct Location {
-  std::string line;
+  int line;
   std::string method;
   std::string source_file;
   std::thread::id thread_id;
@@ -82,7 +82,7 @@ public:
 
   self &operator<<(const Buffer &v);
 
-  self& Locate(const std::string& file, const std::string& method, const std::string& line,std::thread::id tid);
+  self &Locate(const std::string &file, const std::string &method, int line, std::thread::id tid);
 
   void Append(const char *data, int len);
 

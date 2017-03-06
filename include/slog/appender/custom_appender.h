@@ -20,7 +20,7 @@ public:
 
   virtual ~CustomAppender() override;
 
-  CustomFunc& func() const;
+  const CustomFunc &func() const;
 
   void set_func(const CustomFunc& func);
 

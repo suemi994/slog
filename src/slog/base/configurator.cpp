@@ -109,9 +109,8 @@ std::vector<std::string> PropertyConfigurator::LoggerNames(const Properties& pro
 
   auto keys = prop.PropertyNames();
   std::transform(keys.begin(),keys.end(),res.begin(),[](auto & key){
-    return key.substr(key.begin(),std::find_if(key.begin(),key.end(),[](char ch){
-      return ch=='.';
-    }));
+    auto pos = key.find_first_of(".");
+    return key.substr(0, pos == std::string::npos ? key.length() : pos);
   });
 
   res.erase(std::remove_if(res.begin(),res.end(),[](std::string& str){

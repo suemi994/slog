@@ -6,8 +6,8 @@
 
 namespace slog {
 
-FilterPtr FilterBuilder::accept_all_ = std::make_shared<Filter>(new AcceptAllFilter());
-FilterPtr FilterBuilder::deny_all_ = std::make_shared<Filter>(new DenyAllFilter());
+FilterPtr FilterBuilder::accept_all_ = std::make_shared<AcceptAllFilter>();
+FilterPtr FilterBuilder::deny_all_ = std::make_shared<DenyAllFilter>();
 
 FilterBuilder &FilterBuilder::DenyAll() {
   filter_ = deny_all_;

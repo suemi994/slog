@@ -175,7 +175,7 @@ LogEvent::self &LogEvent::operator<<(const std::string &v) {
 }
 
 LogEvent::self &
-LogEvent::Locate(const std::string &file, const std::string &method, const std::string &line, std::thread::id tid) {
+LogEvent::Locate(const std::string &file, const std::string &method, int line, std::thread::id tid) {
   location_.source_file = file;
   location_.method = method;
   location_.line = line;
