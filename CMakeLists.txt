@@ -95,6 +95,9 @@ set(TEST_FILES
         src/slog/utils/file_util.cpp
         test/slog/utils/test_file_util.cpp
 
+        src/slog/filter/filter.cpp
+        src/slog/filter/filter_factory.cpp
+        test/slog/filter/test_filter.cpp
         )
 
 SET(TMP_FILES

@@ -2,13 +2,13 @@
 * Created by suemi on 2017/2/28.
 */
 
-#include "slog/filter/filter_factory.h"
 #include "slog/filter/filter.h"
+#include "slog/filter/filter_factory.h"
 
 namespace slog {
 
 template<>
-ObjectFactory<FilterFactory,Properties>::self* ObjectFactory<FilterFactory,Properties>::Impl() {
+ObjectFactory<Filter, Properties>::self *ObjectFactory<Filter, Properties>::Impl() {
   if(instance_== nullptr) instance_ = new FilterFactory();
   return instance_;
 };

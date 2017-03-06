@@ -32,7 +32,7 @@ public:
 
   virtual ~Filter();
 
-  virtual Result Decide(LogEvent &log_event) const = 0;
+  virtual Result Decide(const LogEvent &log_event) const = 0;
 
   virtual bool Equals(const Filter &filter) const;
 
@@ -78,7 +78,7 @@ public:
 
   AndFilter(const FilterList &filters);
 
-  virtual Result Decide(LogEvent &log_event) const override;
+  virtual Result Decide(const LogEvent &log_event) const override;
 
   virtual bool Equals(const Filter &filter) const override;
 
@@ -104,7 +104,7 @@ public:
 
   OrFilter(const Properties& prop);
 
-  virtual Result Decide(LogEvent &log_event) const override;
+  virtual Result Decide(const LogEvent &log_event) const override;
 
   virtual bool Equals(const Filter &filter) const override;
 
@@ -140,7 +140,7 @@ public:
 
   BinaryAndFilter(const Properties& prop);
 
-  virtual Result Decide(LogEvent &log_event) const override;
+  virtual Result Decide(const LogEvent &log_event) const override;
 
   virtual bool Equals(const Filter &filter) const override;
 
@@ -166,7 +166,7 @@ public:
 
   BinaryOrFilter(const Properties& prop);
 
-  virtual Result Decide(LogEvent &log_event) const override;
+  virtual Result Decide(const LogEvent &log_event) const override;
 
   virtual bool Equals(const Filter &filter) const override;
 
@@ -192,7 +192,7 @@ public:
 
   NotFilter(const Properties& prop);
 
-  virtual Result Decide(LogEvent &log_event) const override;
+  virtual Result Decide(const LogEvent &log_event) const override;
 
   virtual bool Equals(const Filter &filter) const override;
 
@@ -218,7 +218,7 @@ public:
 
   DenyAllFilter(const Properties &properties);
 
-  virtual Result Decide(LogEvent &log_event) const override;
+  virtual Result Decide(const LogEvent &log_event) const override;
 
   virtual bool Equals(const Filter &filter) const override;
 };
@@ -237,7 +237,7 @@ public:
 
   AcceptAllFilter(const Properties &properties);
 
-  virtual Result Decide(LogEvent &log_event) const override;
+  virtual Result Decide(const LogEvent &log_event) const override;
 
   virtual bool Equals(const Filter &filter) const override;
 };
@@ -257,7 +257,7 @@ public:
 
   LogLevelMatchFilter(LogLevel level = LogLevel::DEBUG);
 
-  virtual Result Decide(LogEvent &log_event) const override;
+  virtual Result Decide(const LogEvent &log_event) const override;
 
   virtual bool Equals(const Filter &filter) const override;
 
@@ -285,7 +285,7 @@ public:
 
   LogLevelRangeFilter(const Properties &properties);
 
-  virtual Result Decide(LogEvent &log_event) const override;
+  virtual Result Decide(const LogEvent &log_event) const override;
 
   virtual bool Equals(const Filter &filter) const override;
 
