@@ -62,6 +62,7 @@ void PropertyConfigurator::Init() {
 void PropertyConfigurator::ConfigureLoggers() {
   auto prop = prop_.GetPropertySubset("logger.");
   auto logger_names = LoggerNames(prop);
+
   root_logger_ = LoggerPtr(new Logger("root",scheduler_));
   if(prop.ExistPrefix("root."))
     ConfigureLogger(root_logger_,prop.GetPropertySubset("root."));
@@ -108,7 +109,8 @@ std::vector<std::string> PropertyConfigurator::LoggerNames(const Properties& pro
   std::vector<std::string> res;
 
   auto keys = prop.PropertyNames();
-  std::transform(keys.begin(),keys.end(),res.begin(),[](auto & key){
+
+  std::transform(keys.begin(), keys.end(), std::back_inserter(res), [](auto &key) {
     auto pos = key.find_first_of(".");
     return key.substr(0, pos == std::string::npos ? key.length() : pos);
   });

@@ -64,6 +64,22 @@ void LogScheduler::Start() {
 }
 
 void LogScheduler::Stop() {
+//  {
+//    std::lock_guard<std::mutex> lock(mutex_);
+//    Flush(current_buffer_);
+//  }
+
+  {
+    std::lock_guard<std::mutex> lock(mutex_);
+    buffers_.push_back(std::move(current_buffer_));
+
+    // 当前缓冲区已满，使用第一备用缓冲区
+    if (next_buffer_)
+      current_buffer_ = std::move(next_buffer_);
+    else
+      current_buffer_ = std::make_unique<Buffer>();
+  }
+
   is_running_ = false;
   cond_.notify_all();
   thread_->join();
@@ -122,7 +138,7 @@ void LogScheduler::DaemonFunc() {
   BufferList to_write;
   to_write.reserve(16);
 
-  while (is_running_) {
+  while (is_running_ || !buffers_.empty()) {
     assert(backup_1 && backup_1->length() == 0);
     assert(backup_2 && backup_2->length() == 0);
     assert(to_write.empty());
@@ -132,7 +148,7 @@ void LogScheduler::DaemonFunc() {
       std::unique_lock<std::mutex> lock(mutex_);
       if (buffers_.empty())
         cond_.wait_for(lock, std::chrono::seconds(flush_interval_), [this]() {
-          return !buffers_.empty();
+          return !is_running_ || !buffers_.empty();
         });
       buffers_.push_back(std::move(current_buffer_));
       current_buffer_ = std::move(backup_1);

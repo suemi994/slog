@@ -109,6 +109,7 @@ SET(TMP_FILES
         src/slog/base/fixed_buffer.cpp
         src/slog/utils/file_util.cpp
         src/slog/utils/time_util.cpp
+        src/slog/utils/count_down_latch.cpp
         src/slog/utils/properties.cpp
         src/slog/utils/string_util.cpp
         src/slog/appender/console_appender.cpp
@@ -118,6 +119,19 @@ SET(TMP_FILES
         src/slog/appender/appender.cpp
         src/slog/appender/custom_appender.cpp
         src/slog/appender/appender_factory.cpp
+        src/slog/logging/log_scheduler.cpp
+        src/slog/base/configurator.cpp
+        src/slog/logging/log_event.cpp
+        src/slog/logging/logger.cpp
+        src/slog/logging/log_level.cpp
+        src/slog/utils/formatter.cpp
+        src/slog/format/layout.cpp
+        src/slog/format/layout_factory.cpp
+        src/slog/format/simple_layout.cpp
+        src/slog/format/pattern_layout.cpp
+        src/slog/filter/filter.cpp
+        src/slog/filter/filter_builder.cpp
+        src/slog/filter/filter_factory.cpp
         main.cpp
         )
 add_executable(tmp_main ${TMP_FILES})
