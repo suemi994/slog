@@ -294,11 +294,12 @@ PatternLayout::PatternLayout(const std::string &pattern) : pattern_(pattern) {
 }
 
 PatternLayout::PatternLayout(const Properties &properties) : Layout(properties) {
-  if (properties.Exists("Pattern")) {
-    pattern_ = properties.GetProperty("Pattern");
+  if (properties.Exists("pattern")) {
+    pattern_ = properties.GetProperty("pattern");
   } else {
     LogGuard::Instance()->Error("ConversionPattern not specified in properties", true);
   }
+  Init();
 }
 
 void PatternLayout::Reformat(LogEvent &log) {

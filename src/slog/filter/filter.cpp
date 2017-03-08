@@ -171,7 +171,7 @@ bool AcceptAllFilter::Equals(const Filter &filter) const {
 }
 
 LogLevelMatchFilter::LogLevelMatchFilter(const Properties &properties) {
-  auto str = properties.GetProperty("LogLevelToMatch");
+  auto str = properties.GetProperty("logLevelToMatch");
   try {
     match_level_ = slog::FromString(str);
   } catch (...) {
@@ -196,8 +196,8 @@ LogLevelRangeFilter::LogLevelRangeFilter(LogLevel min, LogLevel max) : min_level
 }
 
 LogLevelRangeFilter::LogLevelRangeFilter(const Properties &properties) {
-  auto min_str = properties.GetProperty("LogLevelMin");
-  auto max_str = properties.GetProperty("LogLevelMax");
+  auto min_str = properties.GetProperty("logLevelMin");
+  auto max_str = properties.GetProperty("logLevelMax");
 
   try {
     min_level_ = slog::FromString(min_str);

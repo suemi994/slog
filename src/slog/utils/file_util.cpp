@@ -7,6 +7,8 @@
 #include <sstream>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <fstream>
+#include <dirent.h>
 #include "slog/utils/file_util.h"
 #include "slog/logging/log_guard.h"
 #include "slog/utils/string_util.h"
@@ -16,13 +18,32 @@ namespace slog {
 long const SLOG_FILE_NOT_FOUND = ENOENT;
 const char DIR_SEP = '/';
 
-long FileUtil::Delete(const std::string &path) {
-  if(std::remove(path.c_str())==0)
+long FileUtil::Touch(const std::string &path) {
+  if (Exists(path)) {
+    std::stringstream oss;
+    LogGuard::Instance()->Warn("File Path : " + path + " Already Exists!");
     return 0;
+  }
+  std::ofstream dst;
+  dst.open(path, std::ios_base::out);
+  dst.close();
+  return 0;
+}
+
+long FileUtil::Delete(const std::string &path) {
+  long res = 0;
+  if (IsDir(path)) {
+    std::vector<std::string> children = ListDir(path);
+    for (auto &child:children)
+      if ((res = Delete(child)) != 0) break;
+  }
+
+  if (res == 0) res = std::remove(path.c_str()) ? errno : 0;
+
+  if (res == 0) return 0;
   else {
     LogGuard* guard = LogGuard::Instance();
-    int res = errno;
-    if(res!=0 && res!=SLOG_FILE_NOT_FOUND){
+    if (res != SLOG_FILE_NOT_FOUND) {
       std::ostringstream oss;
       oss<<"Failed to delete file "<<path<<"; "<<"error: "<<res<<std::endl;
       guard->Error(oss.str());
@@ -80,8 +101,22 @@ bool FileUtil::IsDir(const std::string &path) {
   return S_ISDIR(path_stat.st_mode);
 }
 
+std::vector<std::string> FileUtil::ListDir(const std::string &path) {
+  std::vector<std::string> res;
+  if (!IsDir(path)) return res;
+  std::string prefix = *(path.rbegin()) == '/' ? path : path + "/";
+  struct dirent *ptr = nullptr;
+  DIR *dir = opendir(path.c_str());
+  while ((ptr = readdir(dir)) != nullptr) {
+    if (!strcmp(ptr->d_name, ".")) continue;
+    if (!strcmp(ptr->d_name, "..")) continue;
+    res.push_back(prefix + std::string(ptr->d_name));
+  }
+  return res;
+}
+
 std::string FileUtil::ParentDir(const std::string &path) {
-  auto path_end = path[path.length()-1]==DIR_SEP?path.rbegin().base():path.end();
+  auto path_end = path[path.length() - 1] == DIR_SEP ? (path.rbegin() + 1).base() : path.end();
   std::string tmp(path.begin(),path_end);
   auto last_sep_index = tmp.find_last_of(DIR_SEP);
   return last_sep_index==0?"/":tmp.substr(0,last_sep_index);
@@ -104,7 +139,20 @@ bool FileUtil::Exists(const std::string &path) {
 
 std::string FileUtil::ExpandRelativePath(const std::string &path) {
   auto current_dir = CurrentDir();
-  return *(current_dir.rbegin())=='/'?current_dir+path:current_dir+"/"+path;
+  auto components = StringUtil::Split(current_dir, '/');
+  auto it = path.begin();
+  for (; it != path.end() && (*it == '.' || *it == '/'); ++it) {
+    if (it + 1 == path.end()) continue;
+    if (*(it + 1) == '.') {
+      if (components.size() > 1) components.pop_back();
+      ++it;
+    }
+  }
+
+  std::string suffix = std::string(it, path.end());
+  components.push_back(suffix);
+  return StringUtil::Join(components.begin(), components.end(), "/");
+  //return *(current_dir.rbegin())=='/'?current_dir+path:current_dir+"/"+path;
 }
 
 long FileUtil::MakeDirectory(const std::string &dir) {

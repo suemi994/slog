@@ -17,6 +17,8 @@ public:
 
   ConsoleAppender(const Properties& prop);
 
+  virtual ~ConsoleAppender();
+
   virtual bool is_immediate() const override;
 
 protected:

@@ -45,7 +45,7 @@ public:
 
   bool IsClosed() const;
 
-  template<int SIZE>
+  template<size_t SIZE>
   void Append(const FixedBuffer<SIZE> &buffer);
 
   virtual void Append(const char *data, size_t len);

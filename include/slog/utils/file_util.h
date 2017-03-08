@@ -6,11 +6,15 @@
 #define SLOG_FILE_UTIL_H
 
 #include <string>
+#include <vector>
 
 namespace slog {
 
 class FileUtil {
 public:
+
+  static long Touch(const std::string &path);
+
   static long Delete(const std::string& path);
 
   static long Rename(const std::string& src, const std::string& dst);
@@ -18,6 +22,8 @@ public:
   static void RollOverFiles(const std::string& path, unsigned int max_backup);
 
   static bool IsDir(const std::string& path);
+
+  static std::vector<std::string> ListDir(const std::string &path);
 
   static std::string ParentDir(const std::string& path);
 

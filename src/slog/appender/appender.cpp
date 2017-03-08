@@ -38,7 +38,7 @@ bool Appender::IsClosed() const {
   return is_closed_;
 }
 
-template<int SIZE>
+template<size_t SIZE>
 void Appender::Append(const FixedBuffer<SIZE> &buffer) {
   Append(buffer.data(), buffer.length());
 }

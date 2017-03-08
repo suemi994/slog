@@ -19,6 +19,8 @@ public:
 
   NullAppender(const Properties &prop);
 
+  virtual ~NullAppender();
+
   virtual bool is_immediate() const override;
 
 protected:

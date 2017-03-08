@@ -106,6 +106,18 @@ set(TEST_FILES
 
 SET(TMP_FILES
         src/slog/logging/log_guard.cpp
+        src/slog/base/fixed_buffer.cpp
+        src/slog/utils/file_util.cpp
+        src/slog/utils/time_util.cpp
+        src/slog/utils/properties.cpp
+        src/slog/utils/string_util.cpp
+        src/slog/appender/console_appender.cpp
+        src/slog/appender/null_appender.cpp
+        src/slog/appender/file_appender.cpp
+        src/slog/appender/error_handler.cpp
+        src/slog/appender/appender.cpp
+        src/slog/appender/custom_appender.cpp
+        src/slog/appender/appender_factory.cpp
         main.cpp
         )
 add_executable(tmp_main ${TMP_FILES})
