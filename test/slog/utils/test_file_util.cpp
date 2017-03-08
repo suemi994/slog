@@ -103,3 +103,15 @@ TEST(FILTE_UTIL_TEST, MKDIRS) {
   EXPECT_TRUE(FileUtil::IsDir("./test/log"));
   FileUtil::Delete("./test");
 }
+
+TEST(FILE_UTIL_TEST, ROLL_OVER) {
+  if (FileUtil::Exists("./log")) FileUtil::Delete("./log");
+  FileUtil::MakeDirectory("./log");
+  FileUtil::Touch("./log/log.1");
+
+  FileUtil::RollOverFiles("./log/log", 2);
+
+  EXPECT_TRUE(FileUtil::Exists("./log/log.2"));
+  EXPECT_FALSE(FileUtil::Exists("./log/log.1"));
+  FileUtil::Delete("./log");
+}
