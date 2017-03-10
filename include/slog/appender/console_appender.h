@@ -5,7 +5,7 @@
 #ifndef SLOG_CONSOLE_APPENDER_H
 #define SLOG_CONSOLE_APPENDER_H
 
-#include "appender.h"
+#include "slog/appender/appender.h"
 
 namespace slog {
 

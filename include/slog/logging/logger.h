@@ -37,6 +37,8 @@ public:
   void set_layout(const std::shared_ptr<Layout> layout);
   std::shared_ptr<Filter> filter() const;
   void set_filter(const std::shared_ptr<Filter> filter);
+  const std::shared_ptr<LogScheduler>& scheduler() const;
+  void set_scheduler(const std::shared_ptr<LogScheduler>& scheduler);
 
 private:
   std::shared_ptr<LogScheduler> scheduler_;

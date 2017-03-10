@@ -16,7 +16,7 @@
 
 namespace slog {
 
-// class Logger;
+class Logger;
 
 
 
@@ -40,9 +40,9 @@ class LogEvent : public NoCopyable {
 public:
   using Buffer = FixedBuffer<detail::SMALL_BUFFER_SIZE>;
 
-  // LogEvent(LogLevel level, std::shared_ptr<Logger> logger,Time time);
+  LogEvent(LogLevel level, const std::shared_ptr<Logger>& logger,Time time);
 
-  // LogEvent(LogLevel level,std::shared_ptr<Logger> logger);
+  LogEvent(LogLevel level,const std::shared_ptr<Logger>& logger);
 
   LogEvent(LogLevel level);
 
@@ -100,7 +100,7 @@ public:
 
   std::string message() const;
 
-  // std::shared_ptr<Logger> logger() const;
+  std::shared_ptr<Logger> logger() const;
 
   const Time& time() const;
 
@@ -123,7 +123,7 @@ private:
   LogLevel level_;
   Time time_;
   Location location_;
-  //std::weak_ptr<Logger> logger_;
+  std::weak_ptr<Logger> logger_;
 };
 
 LogEvent &operator<<(LogEvent &log, const Formatter &formatter);

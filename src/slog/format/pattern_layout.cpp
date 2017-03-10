@@ -62,15 +62,10 @@ LoggerPatternConverter::LoggerPatternConverter(const FormattingInfo &info, int p
                                                                                             precision_(precision) {}
 
 void LoggerPatternConverter::Convert(std::ostream &os, LogEvent &log) const {
-/*
   auto ptr = log.logger();
 
   if (ptr == nullptr) return;
   const std::string name = ptr->name();
-*/
-  // TODO
-
-  const std::string &name = "root";
 
   if (precision_ <= 0) {
     os << name;

@@ -14,6 +14,19 @@
 
 namespace slog {
 
+class Properties;
+
+class Appender;
+
+class Filter;
+
+
+class Layout;
+
+
+class ErrorHandler;
+
+
 template<class T,typename... Args>
 class ObjectFactory{
   using self = ObjectFactory<T,Args...>;
@@ -42,6 +55,7 @@ public:
   }
 
 protected:
+
   static self* instance_;
 
   std::unordered_map<std::string,ConstructFunc> constructors_;
@@ -49,6 +63,20 @@ protected:
 
 template<class T,typename... Args>
 ObjectFactory<T,Args...>* ObjectFactory<T,Args...>::instance_ = nullptr;
+
+template<>
+ObjectFactory<Appender, Properties> *ObjectFactory<Appender, Properties>::Impl();
+
+template<>
+ObjectFactory<ErrorHandler> *ObjectFactory<ErrorHandler>::Impl();
+
+template<>
+ObjectFactory<Filter, Properties> *ObjectFactory<Filter, Properties>::Impl();
+
+template<>
+ObjectFactory<Layout,Properties>* ObjectFactory<Layout,Properties>::Impl();
+
+
 
 }
 

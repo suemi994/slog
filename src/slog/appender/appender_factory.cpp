@@ -2,7 +2,7 @@
 * Created by suemi on 2017/2/28.
 */
 
-#include "slog/appender/all.h"
+#include "slog/appender/appender_all.h"
 
 
 namespace slog {

@@ -42,7 +42,7 @@ TEST(FILTER_TEST, LEVEL_MATCH) {
   EXPECT_EQ(Filter::Result::DENY, filter->Decide(LogEvent(LogLevel::DEBUG)));
   EXPECT_EQ(Filter::Result::DENY, filter->Decide(LogEvent(LogLevel::INFO)));
   EXPECT_EQ(Filter::Result::ACCEPT, filter->Decide(LogEvent(LogLevel::WARN)));
-  EXPECT_EQ(Filter::Result::DENY, filter->Decide(LogEvent(LogLevel::ERROR)));
+  EXPECT_EQ(Filter::Result::ACCEPT, filter->Decide(LogEvent(LogLevel::ERROR)));
 }
 
 TEST(FILTER_TEST, LEVEL_RANGE) {
@@ -56,7 +56,7 @@ TEST(FILTER_TEST, LEVEL_RANGE) {
 }
 
 TEST(FILTER_TEST, AND_FILTER) {
-  FilterPtr filter = make_shared<OrFilter>(
+  FilterPtr filter = make_shared<AndFilter>(
       FilterList({make_shared<LogLevelMatchFilter>(LogLevel::WARN), make_shared<LogLevelMatchFilter>(LogLevel::INFO)}));
 
   EXPECT_EQ(Filter::Result::DENY, filter->Decide(LogEvent(LogLevel::TRACE)));

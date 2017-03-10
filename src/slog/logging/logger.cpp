@@ -2,6 +2,8 @@
 * Created by suemi on 2016/12/12.
 */
 
+#include <cassert>
+
 #include "slog/logging/logger.h"
 #include "slog/logging/log_event.h"
 #include "slog/filter/filter.h"
@@ -45,6 +47,15 @@ std::shared_ptr<Filter> Logger::filter() const {
 
 void Logger::set_filter(const std::shared_ptr<Filter> filter) {
   filter_ = filter;
+}
+
+const std::shared_ptr<LogScheduler> &Logger::scheduler() const {
+  return scheduler_;
+}
+
+void Logger::set_scheduler(const std::shared_ptr<LogScheduler> &scheduler) {
+  assert(scheduler_== nullptr);
+  scheduler_ = scheduler;
 }
 
 }

@@ -35,7 +35,7 @@ TEST(LAYOUT_TEST, PATTERN_LAYOUT) {
   log << " Hello,World! ";
   layout.Reformat(log);
 
-  EXPECT_EQ("1970-01-01 08:00:00 - INFO - root  Hello,World!  \n", log.message());
+  EXPECT_EQ("2017-03-10 14:41:50 - INFO -   Hello,World!  \n", log.message());
 }
 
 TEST(LAYOUT_TEST, LAYOUT_FACTORY) {

@@ -18,6 +18,8 @@ std::shared_ptr<Logger> LoggerFactory::GetLogger(const std::string &name) {
   return coordinator.SafeGetLogger(name);
 }
 
+LoggerFactory::Coordinator LoggerFactory::coordinator;
+
 LoggerFactory::Coordinator::Coordinator() : is_ready_(false) {}
 
 LoggerFactory::Coordinator::~Coordinator() {}
@@ -27,7 +29,7 @@ std::shared_ptr<Logger> LoggerFactory::Coordinator::SafeGetLogger(const std::str
     return nullptr;
   std::shared_ptr<Logger> ptr;
   {
-    boost::shared_lock<boost::shared_mutex> read_lock(loggers_mutex_);
+    std::lock_guard<std::mutex> logger_lock(loggers_mutex_);
     auto it = loggers_.find(name);
     if (it != loggers_.end())
       ptr = it->second;
@@ -40,7 +42,7 @@ std::shared_ptr<Logger> LoggerFactory::Coordinator::SafeGetLogger(const std::str
   ptr = std::make_shared<Logger>(name);
   ptr->set_layout(root->layout());
   ptr->set_filter(root->filter());
-
+  ptr->set_scheduler(root->scheduler());
   bool res = SafeSetLogger(name, ptr);
   if (res) return ptr;
   else return SafeGetLogger(name);
@@ -49,21 +51,16 @@ std::shared_ptr<Logger> LoggerFactory::Coordinator::SafeGetLogger(const std::str
 std::shared_ptr<LogScheduler> LoggerFactory::Coordinator::SafeGetScheduler() {
   if (!is_ready_.load())
     return nullptr;
-  std::shared_ptr<LogScheduler> ptr = scheduler_.load();
-  if (ptr != nullptr) return ptr;
-  ptr = std::make_shared<LogScheduler>();
-  bool res = SafeSetScheduler(ptr);
-  return scheduler_.load();
+  std::shared_ptr<LogScheduler> ptr;
+  {
+    std::lock_guard<std::mutex> read_lock(init_mutex_);
+    ptr = scheduler_;
+  }
+  return ptr;
 }
 
 std::shared_ptr<Logger> LoggerFactory::Coordinator::SafeGetRootLogger() {
-  if (!is_ready_.load())
-    return nullptr;
-  std::shared_ptr<Logger> ptr = root_logger_.load();
-  if (ptr != nullptr) return ptr;
-  ptr = std::make_shared<Logger>(std::string());
-  bool res = SafeSetRootLogger(ptr);
-  return root_logger_.load();
+  return SafeGetLogger("root");
 }
 
 std::shared_ptr<Appender> LoggerFactory::Coordinator::SafeGetAppender(const std::string &name) {
@@ -71,7 +68,7 @@ std::shared_ptr<Appender> LoggerFactory::Coordinator::SafeGetAppender(const std:
     return nullptr;
   std::shared_ptr<Appender> ptr;
   {
-    boost::shared_lock<boost::shared_mutex> read_lock(appenders_mutex_);
+    std::lock_guard<std::mutex> init_lock(init_mutex_);
     auto it = appenders_.find(name);
     if (it != appenders_.end())
       ptr = it->second;
@@ -86,14 +83,13 @@ std::shared_ptr<Appender> LoggerFactory::Coordinator::SafeGetAppender(const std:
 }
 
 void LoggerFactory::Coordinator::Reset() {
-  boost::unique_lock<boost::shared_mutex> appenders_lock(appenders_mutex_);
+  std::lock_guard<std::mutex> init_lock(init_mutex_);
   {
-    boost::unique_lock<boost::shared_mutex> loggers_lock(loggers_mutex_);
+    std::lock_guard<std::mutex> loggers_lock(loggers_mutex_);
     appenders_.clear();
     loggers_.clear();
-    scheduler_.load()->Stop();
-    scheduler_.store(nullptr);
-    root_logger_.store(nullptr);
+    scheduler_->Stop();
+    scheduler_.reset();
   }
 }
 
@@ -103,41 +99,41 @@ bool LoggerFactory::Coordinator::ready() const {
 
 void LoggerFactory::Coordinator::Initialize(Configurator &cfg) {
   if(is_ready_.load()) Reset();
+  is_ready_.store(false);
 
   {
-    boost::unique_lock<boost::shared_mutex> appenders_lock(appenders_mutex_);
-    boost::unique_lock<boost::shared_mutex> loggers_lock(loggers_mutex_);
-    cfg.Configure();
-    SafeSetScheduler(cfg.scheduler());
+    std::lock_guard<std::mutex> init_lock(init_mutex_);
+    std::lock_guard<std::mutex> loggers_lock(loggers_mutex_);
+    scheduler_ = cfg.scheduler();
     auto & appenders = cfg.appenders();
     for(auto it=appenders.begin();it!=appenders.end();++it)
-      SafeSetAppender(it->first,it->second);
-    SafeSetRootLogger(cfg.root_logger());
+      appenders_.insert(*it);
+    loggers_.insert({"root",cfg.root_logger()});
     auto & loggers = cfg.loggers();
     for(auto it=loggers.begin();it!=loggers.end();++it)
-      SafeSetLogger(it->first,it->second);
+      loggers_.insert(*it);
 
-    scheduler_.load()->Start();
+    scheduler_->Start();
   }
+  is_ready_.store(true);
 
   cfg.Reset();
 }
 
 bool LoggerFactory::Coordinator::SafeSetScheduler(std::shared_ptr<LogScheduler> scheduler) {
-  std::shared_ptr<LogScheduler> ptr = nullptr;
-  bool res = std::atomic_compare_exchange_strong(&scheduler_, &ptr, scheduler);
-  if (res)
-    scheduler_.load()->Start();
-  return res;
+  std::lock_guard<std::mutex> lock(init_mutex_);
+  std::shared_ptr<LogScheduler> ptr = scheduler;
+  if(ptr!= nullptr) return false;
+  scheduler_ = scheduler;
+  return true;
 }
 
 bool LoggerFactory::Coordinator::SafeSetRootLogger(std::shared_ptr<Logger> logger) {
-  std::shared_ptr<Logger> ptr = nullptr;
-  return std::atomic_compare_exchange_strong(&root_logger_, &ptr, logger);
+  return SafeSetLogger("root",logger);
 }
 
 bool LoggerFactory::Coordinator::SafeSetLogger(const std::string &name, const std::shared_ptr<Logger> logger) {
-  boost::unique_lock<boost::shared_mutex> lock(loggers_mutex_);
+  std::lock_guard<std::mutex> lock(loggers_mutex_);
   auto it = loggers_.find(name);
   if (it != loggers_.end())
     return false;
@@ -146,7 +142,7 @@ bool LoggerFactory::Coordinator::SafeSetLogger(const std::string &name, const st
 }
 
 bool LoggerFactory::Coordinator::SafeSetAppender(const std::string &name, const std::shared_ptr<Appender> appender) {
-  boost::unique_lock<boost::shared_mutex> lock(appenders_mutex_);
+  std::lock_guard<std::mutex> lock(init_mutex_);
   auto it = appenders_.find(name);
   if (it != appenders_.end())
     return false;

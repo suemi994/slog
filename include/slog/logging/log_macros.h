@@ -20,17 +20,17 @@ std::string MethodName(const std::string& pretty_function) ;
 
 #define __THREAD__ std::this_thread::get_id()
 
-#define LOG_TRACE(logger) LogEvent(slog::LogLevel::TRACE,logger).Locate(__FILE__,__METHOD__,__LINE__,__THREAD__)
+#define LOG_TRACE(logger) slog::LogEvent(slog::LogLevel::TRACE,logger).Locate(__FILE__,__METHOD__,__LINE__,__THREAD__)
 
-#define LOG_DEBUG(logger) LogEvent(slog::LogLevel::DEBUG,logger).Locate(__FILE__,__METHOD__,__LINE__,__THREAD__)
+#define LOG_DEBUG(logger) slog::LogEvent(slog::LogLevel::DEBUG,logger).Locate(__FILE__,__METHOD__,__LINE__,__THREAD__)
 
-#define LOG_INFO(logger) LogEvent(slog::LogLevel::INFO,logger).Locate(__FILE__,__METHOD__,__LINE__,__THREAD__)
+#define LOG_INFO(logger) slog::LogEvent(slog::LogLevel::INFO,logger).Locate(__FILE__,__METHOD__,__LINE__,__THREAD__)
 
-#define LOG_WARN(logger) LogEvent(slog::LogLevel::WARN,logger).Locate(__FILE__,__METHOD__,__LINE__,__THREAD__)
+#define LOG_WARN(logger) slog::LogEvent(slog::LogLevel::WARN,logger).Locate(__FILE__,__METHOD__,__LINE__,__THREAD__)
 
-#define LOG_ERROR(logger) LogEvent(slog::LogLevel::ERROR,logger).Locate(__FILE__,__METHOD__,__LINE__,__THREAD__)
+#define LOG_ERROR(logger) slog::LogEvent(slog::LogLevel::ERROR,logger).Locate(__FILE__,__METHOD__,__LINE__,__THREAD__)
 
-#define LOG(logger,level) LogEvent(level,logger).Locate(__FILE__,__METHOD__,__LINE__,__THREAD__)
+#define LOG(logger,level) slog::LogEvent(level,logger).Locate(__FILE__,__METHOD__,__LINE__,__THREAD__)
 }
 
 #endif 

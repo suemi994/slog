@@ -9,7 +9,7 @@
 #include <cstring>
 #include <unistd.h>
 
-#include "slog/appender/all.h"
+#include "slog/appender/appender_all.h"
 #include "slog/utils/properties.h"
 
 using namespace slog;

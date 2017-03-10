@@ -2,8 +2,8 @@
 * Created by suemi on 2017/2/28.
 */
 
-#ifndef SLOG_ALL_H
-#define SLOG_ALL_H
+#ifndef SLOG_APPENDER_ALL_H
+#define SLOG_APPENDER_ALL_H
 
 #include "appender.h"
 #include "error_handler.h"

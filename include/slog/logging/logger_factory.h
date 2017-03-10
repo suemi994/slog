@@ -8,7 +8,7 @@
 #include <unordered_map>
 #include <memory>
 #include <string>
-#include <boost/thread/shared_mutex.hpp>
+#include <mutex>
 #include <atomic>
 
 #include "slog/utils/no_copyable.h"
@@ -34,7 +34,7 @@ class LoggerFactory {
 public:
   static void Init(Configurator &cfg);
 
-  static std::shared_ptr<Logger> GetLogger(const std::string &name = "");
+  static std::shared_ptr<Logger> GetLogger(const std::string &name = "root");
 
 private:
 
@@ -81,12 +81,11 @@ private:
 
     std::unordered_map<std::string, std::shared_ptr<Logger>> loggers_;
     std::unordered_map<std::string, std::shared_ptr<Appender>> appenders_;
-    std::atomic<std::shared_ptr<Logger>> root_logger_;
-    std::atomic<std::shared_ptr<LogScheduler>> scheduler_;
+    std::shared_ptr<LogScheduler> scheduler_;
 
     std::atomic_bool is_ready_;
-    boost::shared_mutex loggers_mutex_;
-    boost::shared_mutex appenders_mutex_;
+    std::mutex loggers_mutex_;
+    std::mutex init_mutex_;
 
     friend class LoggerFactory;
   };

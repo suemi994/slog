@@ -6,6 +6,7 @@
 
 #include "slog/logging/log_event.h"
 #include "slog/logging/logger.h"
+#include "slog/logging/log_guard.h"
 
 namespace slog {
 
@@ -56,29 +57,27 @@ size_t ConvertAsHex(char buf[], uintptr_t val) {
   return p - buf;
 }
 }
-/*
-LogEvent::LogEvent(LogLevel level, std::shared_ptr<Logger> logger, LogEvent::Time time) :
+LogEvent::LogEvent(LogLevel level,const std::shared_ptr<Logger>& logger, LogEvent::Time time) :
     level_(level), logger_(logger), time_(time) {
 }
 
-LogEvent::LogEvent(LogLevel level, std::shared_ptr<Logger> logger) : LogEvent(level, logger,
+LogEvent::LogEvent(LogLevel level, const std::shared_ptr<Logger>& logger) : LogEvent(level, logger,
                                                                               std::chrono::system_clock::now()) {
 
 }
- */
 
-//LogEvent::LogEvent(LogLevel level) : LogEvent(level, nullptr) {
-//
-//}
-
-LogEvent::LogEvent(LogLevel level) : level_(level) {
+LogEvent::LogEvent(LogLevel level) : LogEvent(level, nullptr) {
 
 }
 
 LogEvent::~LogEvent() {
-//  if (auto logger_ptr = logger_.lock()) {
-//    logger_ptr->Submit(*this);
-//  }
+  try {
+    if (auto logger_ptr = logger_.lock()) {
+      logger_ptr->Submit(*this);
+    }
+  } catch (...) {
+    LogGuard::Instance()->Error("Fail to submit a log!");
+  }
 }
 
 LogEvent::self &LogEvent::operator<<(bool val) {
@@ -220,11 +219,9 @@ std::string LogEvent::message() const {
   return buffer_.ToString();
 }
 
-/*
 std::shared_ptr<Logger> LogEvent::logger() const {
   return logger_.lock();
 }
-*/
 
 const LogEvent::Time &LogEvent::time() const {
   return time_;

@@ -10,7 +10,7 @@
 namespace slog {
 template<typename T>
 Formatter::Formatter(const char *fmt, T val) {
-  static_assert(std::is_arithmetic<T>::value== true); //确保T为基本类型
+  static_assert(std::is_arithmetic<T>::value== true,"Formatter just for arithmetic type!"); //确保T为基本类型
   length_ = snprintf(buf_, sizeof(buf_),fmt,val);
   assert(static_cast<size_t>(length_)< sizeof(buf_));
 }
